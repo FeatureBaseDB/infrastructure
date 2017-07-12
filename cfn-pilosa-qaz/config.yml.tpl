@@ -1,17 +1,18 @@
 region: us-east-1
-project: cfn-pilosa-qaz-cody
+project: cody # usually just change this to your name - this plus the stack name
+              # below will be the stack name in aws
 
 global:
 
 stacks:
-  pilosa:
+  pilosa: # a stack will be created called cody-pilosa if you do `qaz deploy pilosa` in this directory
     source: templates/pilosa.yml
-    profile: sandbox
+    profile: default # AWS profile from ~/.aws/config
     cf:
       agents: 1
       nodes: 3
     parameters:
-      - ClusterName: codytest0
-      - KeyPair: cody@soyland.org
+      - ClusterName: pilosa # cluster nodes will be nodeX.pilosa.sandbox.pilosa.com
+      - KeyPair: cody@soyland.org # name of keypair you use for AWS
       - Subnet: subnet-839804cb
       - VPC: vpc-2b885052
