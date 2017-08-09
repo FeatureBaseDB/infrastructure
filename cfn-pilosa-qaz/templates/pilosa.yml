@@ -165,7 +165,13 @@ Resources:
           EOF
 
           # install pilosa
-          go get -u github.com/pilosa/pilosa
+          n=0
+          until [ $n -ge 5 ]
+          do
+            go get -u github.com/pilosa/pilosa && break
+            n=$[$n+1]
+            sleep 5
+          done
           cd $GOPATH/src/github.com/pilosa/pilosa
           make install
 
@@ -174,18 +180,15 @@ Resources:
               data-dir = "/home/ubuntu/pilosa/data1"
               bind = "node{{ $i }}.${ClusterName}.sandbox.pilosa.com:10101"
               log-path = "/home/ubuntu/pilosa.log"
+              gossip-port = 12000
+              gossip-seed = "node0.${ClusterName}.sandbox.pilosa.com:12000"
 
               [cluster]
               replicas = ${Replicas}
-              internal-port = 12000
-              type = "http"
+              type = "gossip"
               hosts = [
               {{- range $j, $blah := loop $.stack.nodes -}}
                 "node{{ $j }}.${ClusterName}.sandbox.pilosa.com:10101",
-              {{- end }}]
-              internal-hosts = [
-              {{- range $j, $_ := loop $.stack.nodes -}}
-                "node{{ $j }}.${ClusterName}.sandbox.pilosa.com:12000",
               {{- end }}]
           EOF
 
@@ -231,6 +234,14 @@ Resources:
           FromPort: '22'
           IpProtocol: tcp
           ToPort: '22'
+        - CidrIp: 0.0.0.0/0
+          FromPort: '10101'
+          IpProtocol: tcp
+          ToPort: '10101'
+        - CidrIp: 0.0.0.0/0
+          FromPort: '8000'
+          IpProtocol: tcp
+          ToPort: '8000'
       VpcId: !Ref 'VPC'
     Type: AWS::EC2::SecurityGroup
   PilosaIngress:
