@@ -164,7 +164,7 @@ Resources:
               * soft memlock unlimited
           EOF
 
-          # install pilosa
+          # install pilosa from github - retry up to 5 times
           n=0
           until [ $n -ge 5 ]
           do
