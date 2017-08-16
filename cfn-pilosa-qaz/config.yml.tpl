@@ -14,5 +14,5 @@ stacks:
     parameters:
       - ClusterName: pilosa # cluster nodes will be nodeX.pilosa.sandbox.pilosa.com
       - KeyPair: cody@soyland.org # name of keypair you use for AWS
-      - Subnet: subnet-839804cb
-      - VPC: vpc-2b885052
+      - Subnet: subnet-e44333be
+      - VPC: vpc-cb80d5b2
