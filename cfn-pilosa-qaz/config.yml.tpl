@@ -16,3 +16,7 @@ stacks:
       - KeyPair: cody@soyland.org # name of keypair you use for AWS
       - Subnet: subnet-e44333be
       - VPC: vpc-cb80d5b2
+      - AgentInstanceType: c4.large
+      - InstanceType: m3.medium
+      - VolumeSize: 10
+      - Replicas: 1
