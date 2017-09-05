@@ -1,5 +1,9 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Parameters:
+  DomainName:
+    Default: sandbox.pilosa.com
+    Description: DNS domain for pilosa and agent cluster.
+    Type: String
   AMI:
     Default: ami-e3c3b8f4
     Description: AMI to use for pilosa instance
@@ -10,7 +14,7 @@ Parameters:
     Type: String
   ClusterName:
     Default: cluster0
-    Description: Unique name for this pilosa cluster. Used in DNS (node0.{name}.sandbox.pilosa.com
+    Description: Unique name for this pilosa cluster. Used in DNS (node0.{ClusterName}.{DomainName}
     Type: String
   InstanceType:
     Default: m3.medium
@@ -94,7 +98,7 @@ Resources:
   AgentPrivateRecordSet{{ $i }}:
     Properties:
       HostedZoneId: !Ref 'PilosaZone'
-      Name: !Sub 'agent{{ $i }}.${ClusterName}.sandbox.pilosa.com.'
+      Name: !Sub 'agent{{ $i }}.${ClusterName}.${DomainName}.'
       ResourceRecords:
         - !GetAtt 'PilosaAgentInstance{{ $i }}.PrivateIp'
       TTL: '300'
@@ -102,8 +106,8 @@ Resources:
     Type: AWS::Route53::RecordSet
   AgentPublicRecordSet0:
     Properties:
-      HostedZoneName: sandbox.pilosa.com.
-      Name: !Sub 'agent{{ $i }}.${ClusterName}.sandbox.pilosa.com.'
+      HostedZoneName: !Sub '${DomainName}.'
+      Name: !Sub 'agent{{ $i }}.${ClusterName}.${DomainName}.'
       ResourceRecords:
         - !GetAtt 'PilosaAgentInstance{{ $i }}.PublicIp'
       TTL: '300'
@@ -136,6 +140,8 @@ Resources:
           apt-get update
           apt-get -y install git
           apt-get -y install make
+          # linux-aws works around a bug with nvme drives https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1668129
+          apt-get -y install linux-aws
 
           # install go
           mkdir -p /usr/local/go
@@ -178,17 +184,17 @@ Resources:
           # set up pilosa config file
           cat > /etc/pilosa.cfg <<"<<">>- EOF
               data-dir = "/home/ubuntu/pilosa/data1"
-              bind = "node{{ $i }}.${ClusterName}.sandbox.pilosa.com:10101"
+              bind = "node{{ $i }}.${ClusterName}.${DomainName}:10101"
               log-path = "/home/ubuntu/pilosa.log"
               gossip-port = 12000
-              gossip-seed = "node0.${ClusterName}.sandbox.pilosa.com:12000"
+              gossip-seed = "node0.${ClusterName}.${DomainName}:12000"
 
               [cluster]
               replicas = ${Replicas}
               type = "gossip"
               hosts = [
               {{- range $j, $blah := loop $.stack.nodes -}}
-                "node{{ $j }}.${ClusterName}.sandbox.pilosa.com:10101",
+                "node{{ $j }}.${ClusterName}.${DomainName}:10101",
               {{- end }}]
           EOF
 
@@ -199,13 +205,14 @@ Resources:
           # all output should go to pilosa.log - pilosa.out should be empty
           ulimit -n 262144
           ulimit -l unlimited
-          sudo -u ubuntu PATH=$PATH nohup pilosa server --config=/etc/pilosa.cfg &> /home/ubuntu/pilosa.out &
+          sudo -u ubuntu touch /home/ubuntu/pilosa.out
+          sudo -u ubuntu PATH=$PATH nohup pilosa server --config=/etc/pilosa.cfg &>> /home/ubuntu/pilosa.out &
 
     Type: AWS::EC2::Instance
   PilosaPrivateRecordSet{{ $i }}:
     Properties:
       HostedZoneId: !Ref 'PilosaZone'
-      Name: !Sub 'node{{ $i }}.${ClusterName}.sandbox.pilosa.com.'
+      Name: !Sub 'node{{ $i }}.${ClusterName}.${DomainName}.'
       ResourceRecords:
         - !GetAtt 'PilosaInstance{{ $i }}.PrivateIp'
       TTL: '300'
@@ -213,8 +220,8 @@ Resources:
     Type: AWS::Route53::RecordSet
   PilosaPublicRecordSet{{ $i }}:
     Properties:
-      HostedZoneName: sandbox.pilosa.com.
-      Name: !Sub 'node{{ $i }}.${ClusterName}.sandbox.pilosa.com.'
+      HostedZoneName: !Sub '${DomainName}.'
+      Name: !Sub 'node{{ $i }}.${ClusterName}.${DomainName}.'
       ResourceRecords:
         - !GetAtt 'PilosaInstance{{ $i }}.PublicIp'
       TTL: '300'
@@ -274,7 +281,7 @@ Resources:
     Type: AWS::IAM::Role
   PilosaZone:
     Properties:
-      Name: !Sub '${ClusterName}.sandbox.pilosa.com'
+      Name: !Sub '${ClusterName}.${DomainName}'
       VPCs:
         - VPCId: !Ref 'VPC'
           VPCRegion: !Ref 'AWS::Region'
