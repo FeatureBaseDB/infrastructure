@@ -8,6 +8,7 @@ from troposphere import route53
 class SandboxTemplate(Skel):
     def __init__(self, domain):
         self.domain = domain
+        super(SandboxTemplate, self).__init__()
 
     @cfresource
     def hosted_zone(self):
