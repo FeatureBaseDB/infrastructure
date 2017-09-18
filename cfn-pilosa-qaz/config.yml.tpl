@@ -17,6 +17,6 @@ stacks:
       - Subnet: subnet-e44333be
       - VPC: vpc-cb80d5b2
       - AgentInstanceType: c4.large
-      - InstanceType: m3.medium
+      - InstanceType: m4.large
       - VolumeSize: 10
       - Replicas: 1

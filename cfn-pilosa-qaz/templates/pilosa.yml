@@ -14,10 +14,10 @@ Parameters:
     Type: String
   ClusterName:
     Default: cluster0
-    Description: Unique name for this pilosa cluster. Used in DNS (node0.{ClusterName}.{DomainName}
+    Description: Unique name for this pilosa cluster. Used in DNS (node0.{ClusterName}.{DomainName})
     Type: String
   InstanceType:
-    Default: m3.medium
+    Default: m4.large
     Description: Instance type of pilosa
     Type: String
   KeyPair:
@@ -49,6 +49,7 @@ Resources:
       ImageId: !Ref 'AMI'
       InstanceType: !Ref 'AgentInstanceType'
       KeyName: !Ref 'KeyPair'
+      PlacementGroupName: !Ref 'PilosaPlacementGroup'
       NetworkInterfaces:
         - AssociatePublicIpAddress: 'true'
           DeleteOnTermination: 'true'
@@ -126,6 +127,7 @@ Resources:
       ImageId: !Ref 'AMI'
       InstanceType: !Ref 'InstanceType'
       KeyName: !Ref 'KeyPair'
+      PlacementGroupName: !Ref 'PilosaPlacementGroup'
       NetworkInterfaces:
         - AssociatePublicIpAddress: 'true'
           DeleteOnTermination: 'true'
@@ -228,6 +230,8 @@ Resources:
       Type: A
     Type: AWS::Route53::RecordSet
   {{- end }}
+  PilosaPlacementGroup:
+    Type: AWS::EC2::PlacementGroup
   PilosaInstanceProfile:
     Properties:
       Roles:
