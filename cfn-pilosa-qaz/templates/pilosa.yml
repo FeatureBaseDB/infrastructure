@@ -267,6 +267,14 @@ Resources:
       SourceSecurityGroupId: !Ref 'PilosaInstanceSecurityGroup'
       ToPort: '12000'
     Type: AWS::EC2::SecurityGroupIngress
+  PilosaInternalIngressUDP:
+    Properties:
+      FromPort: '12000'
+      GroupId: !Ref 'PilosaInstanceSecurityGroup'
+      IpProtocol: udp
+      SourceSecurityGroupId: !Ref 'PilosaInstanceSecurityGroup'
+      ToPort: '12000'
+    Type: AWS::EC2::SecurityGroupIngress
   PilosaRole:
     Properties:
       AssumeRolePolicyDocument:
