@@ -49,6 +49,7 @@ Resources:
       ImageId: !Ref 'AMI'
       InstanceType: !Ref 'AgentInstanceType'
       KeyName: !Ref 'KeyPair'
+      PlacementGroupName: !Ref 'PilosaPlacementGroup'
       NetworkInterfaces:
         - AssociatePublicIpAddress: 'true'
           DeleteOnTermination: 'true'
@@ -134,6 +135,7 @@ Resources:
       ImageId: !Ref 'AMI'
       InstanceType: !Ref 'InstanceType'
       KeyName: !Ref 'KeyPair'
+      PlacementGroupName: !Ref 'PilosaPlacementGroup'
       NetworkInterfaces:
         - AssociatePublicIpAddress: 'true'
           DeleteOnTermination: 'true'
@@ -240,6 +242,8 @@ Resources:
       Type: A
     Type: AWS::Route53::RecordSet
   {{- end }}
+  PilosaPlacementGroup:
+    Type: AWS::EC2::PlacementGroup
   PilosaInstanceProfile:
     Properties:
       Roles:
@@ -306,3 +310,4 @@ Resources:
         - VPCId: !Ref 'VPC'
           VPCRegion: !Ref 'AWS::Region'
     Type: AWS::Route53::HostedZone
+    
