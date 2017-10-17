@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "VPC",
+    "ParameterValue": "vpc-07eaf460"
+  },
+  {
+    "ParameterKey": "Subnet",
+    "ParameterValue": "subnet-5bd94812"
+  },
+  {
+    "ParameterKey": "KeyPair",
+    "ParameterValue": "cody@soyland.org"
+  }
+]

@@ -1,0 +1,93 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Utility server
+Parameters:
+  AMI:
+    Default: ami-bcdc16c6
+    Description: Instance AMI
+    Type: String
+  InstanceType:
+    Default: m3.medium
+    Description: Instance type
+    Type: String
+  VPC:
+    Description: Instance VPC
+    Type: String
+  Subnet:
+    Description: Instance subnet
+    Type: String
+  KeyPair:
+    Description: Key pair to use for sudoer user
+    Type: String
+  DomainName:
+    Description: Domain name (used to create subdomains). Hosted zone must exist in Route53.
+    Type: String
+    Default: pilosa.com
+Outputs:
+  PublicIp:
+    Description: Public IP of utility instance
+    Value: !GetAtt 'Instance.PublicIp'
+Resources:
+  Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      IamInstanceProfile: !Ref 'InstanceProfile'
+      ImageId: !Ref 'AMI'
+      InstanceType: !Ref 'InstanceType'
+      KeyName: !Ref 'KeyPair'
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: 'true'
+          DeleteOnTermination: 'true'
+          DeviceIndex: '0'
+          GroupSet:
+            - !Ref 'SecurityGroup'
+          SubnetId: !Ref 'Subnet'
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref 'Role'
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable SSH access via port 22
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: '22'
+          IpProtocol: tcp
+          ToPort: '22'
+        # TODO: Use ALB and HTTPS (AWS::ElasticLoadBalancingV2::LoadBalancer) instead of directly using port 80
+        - CidrIp: 0.0.0.0/0
+          FromPort: '80'
+          IpProtocol: tcp
+          ToPort: '80'
+      VpcId: !Ref 'VPC'
+  Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action:
+              - sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+      Policies: []
+  BenchmarkVizRecordSet:
+    Properties:
+      HostedZoneName: !Sub '${DomainName}.'
+      Name: !Sub 'benchmark-viz.${DomainName}.'
+      ResourceRecords:
+        - !GetAtt 'Instance.PublicIp'
+      TTL: '300'
+      Type: A
+    Type: AWS::Route53::RecordSet
+  CommunityDashboardRecordSet:
+    Properties:
+      HostedZoneName: !Sub '${DomainName}.'
+      Name: !Sub 'community-dashboard.${DomainName}.'
+      ResourceRecords:
+        - !GetAtt 'Instance.PublicIp'
+      TTL: '300'
+      Type: A
+    Type: AWS::Route53::RecordSet
