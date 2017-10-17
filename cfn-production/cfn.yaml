@@ -1,0 +1,29 @@
+Parameters:
+  HostedZoneName:
+    Default: pilosa.com
+    Description: The DNS name of an existing Amazon Route 53 hosted zone
+    Type: String
+Resources:
+  GuideBucket:
+    Properties:
+      AccessControl: PublicRead
+      BucketName: guide.pilosa.com
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        RoutingRules:
+          - RedirectRule:
+              HostName: sites.google.com
+              HttpRedirectCode: '302'
+              Protocol: https
+              ReplaceKeyWith: pilosa.com/guide/
+    Type: AWS::S3::Bucket
+  GuideRecordSet:
+    Properties:
+      #HostedZoneName: !Sub '${HostedZoneName}.'
+      HostedZoneId: ZH4GN1IDK3ZB4
+      Name: !Sub 'guide.${HostedZoneName}.'
+      ResourceRecords:
+        - guide.pilosa.com.s3-website-us-east-1.amazonaws.com
+      TTL: '900'
+      Type: CNAME
+    Type: AWS::Route53::RecordSet

@@ -6,12 +6,6 @@ This is a Cloudformation template generator for managing the production environm
 Usage
 -----
 
-### Generate Cloudformation template
-
-```
-$ make cfn-production.json
-```
-
 ### Create a stack
 
 ```

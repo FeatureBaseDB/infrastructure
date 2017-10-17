@@ -1,26 +1,19 @@
 .PHONY: create-stack update-stack delete-stack describe-stack
 STACK=production
-PY_FILE=cfn-production.py
-JSON_FILE=cfn-production.json
-PARAMETERS=
+PARAMETERS=file://cfn-parameters.json
+TEMPLATE=file://cfn.yaml
 
 env:
 	virtualenv env
 
-env/deps: requirements.txt env
-	env/bin/pip install -r requirements.txt && touch env/deps
+create-stack: $(JSON_FILE)
+	aws cloudformation create-stack --stack-name $(STACK) --template-body $(TEMPLATE) --capabilities CAPABILITY_IAM --parameters $(PARAMETERS)
 
-$(JSON_FILE): env/deps $(PY_FILE)
-	env/bin/python $(PY_FILE) > $(JSON_FILE)
+update-stack: $(JSON_FILE)
+	aws cloudformation update-stack --stack-name $(STACK) --template-body $(TEMPLATE) --capabilities CAPABILITY_IAM --parameters $(PARAMETERS)
 
-create-stack: $(JSON_FILE) env/deps
-	env/bin/aws cloudformation create-stack --stack-name $(STACK) --template-body file://$(JSON_FILE) --capabilities CAPABILITY_IAM --parameters $(PARAMETERS)
+delete-stack:
+	aws cloudformation delete-stack --stack-name $(STACK)
 
-update-stack: $(JSON_FILE) env/deps
-	env/bin/aws cloudformation update-stack --stack-name $(STACK) --template-body file://$(JSON_FILE) --capabilities CAPABILITY_IAM
-
-delete-stack: env/deps
-	env/bin/aws cloudformation delete-stack --stack-name $(STACK)
-
-describe-stack: env/deps
-	env/bin/aws cloudformation describe-stacks --stack-name $(STACK)
+describe-stack:
+	aws cloudformation describe-stacks --stack-name $(STACK)
