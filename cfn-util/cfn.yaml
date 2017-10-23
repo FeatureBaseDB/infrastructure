@@ -46,6 +46,14 @@ Resources:
     Properties:
       Roles:
         - !Ref 'Role'
+  DBSecurityGroupIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: sg-b52aa2c7
+      SourceSecurityGroupId: !Ref 'SecurityGroup'
+      FromPort: 5432
+      ToPort: 5432
+      IpProtocol: tcp
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -72,7 +80,15 @@ Resources:
             Principal:
               Service:
                 - ec2.amazonaws.com
-      Policies: []
+      Policies:
+        - PolicyName: "ReadS3ConfigBucket"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                Resource: arn:aws:s3:::config.pilosa.com/benchmark-viz/*
   BenchmarkVizRecordSet:
     Properties:
       HostedZoneName: !Sub '${DomainName}.'
