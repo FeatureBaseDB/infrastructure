@@ -88,7 +88,20 @@ Resources:
               - Effect: Allow
                 Action:
                   - s3:GetObject
-                Resource: arn:aws:s3:::config.pilosa.com/benchmark-viz/*
+                Resource:
+                    - arn:aws:s3:::config.pilosa.com/benchmark-viz/*
+                    - arn:aws:s3:::config.pilosa.com/community-dashboard/*
+        - PolicyName: "ReadS3BenchmarkBucket"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                    - arn:aws:s3:::benchmark-results.pilosa.com
+                    - arn:aws:s3:::benchmark-results.pilosa.com/*
   BenchmarkVizRecordSet:
     Properties:
       HostedZoneName: !Sub '${DomainName}.'
