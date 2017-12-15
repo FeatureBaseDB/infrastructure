@@ -80,6 +80,8 @@ Resources:
             Principal:
               Service:
                 - ec2.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonDynamoDBReadOnlyAccess
       Policies:
         - PolicyName: "ReadS3ConfigBucket"
           PolicyDocument:
@@ -102,6 +104,15 @@ Resources:
                 Resource:
                     - arn:aws:s3:::benchmark-results.pilosa.com
                     - arn:aws:s3:::benchmark-results.pilosa.com/*
+        - PolicyName: "UploadDiagnostics"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:PutObject*
+                Resource:
+                    - arn:aws:s3:::diagnostics.pilosa.com/*
   BenchmarkVizRecordSet:
     Properties:
       HostedZoneName: !Sub '${DomainName}.'
