@@ -41,6 +41,14 @@ Parameters:
     Default: 1
     Description: Number of Pilosa replicas
     Type: Number
+  PilosaVersion:
+    Default: 'master'
+    Description: Pilosa version to use - must be a valid argument to 'git checkout'.
+    Type: String
+  PDKVersion:
+    Default: 'master'
+    Description: PDK version to use - must be a valid argument to 'git checkout'.
+    Type: String
 Resources:
   {{- range $i, $_ := loop .stack.agents }}
   PilosaAgentInstance{{ $i }}:
@@ -89,6 +97,7 @@ Resources:
           # install pdk
           go get -u github.com/pilosa/pdk
           cd $GOPATH/src/github.com/pilosa/pdk
+          git checkout ${PDKVersion}
           make install
 
 
@@ -181,6 +190,7 @@ Resources:
             sleep 5
           done
           cd $GOPATH/src/github.com/pilosa/pilosa
+          git checkout ${PilosaVersion}
           make install
 
           # set up pilosa config file
