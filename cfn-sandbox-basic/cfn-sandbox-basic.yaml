@@ -1,0 +1,40 @@
+Resources:
+  AttachGateway:
+    Properties:
+      InternetGatewayId: !Ref 'InternetGateway'
+      VpcId: !Ref 'VPC'
+    Type: AWS::EC2::VPCGatewayAttachment
+  SubnetB:
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref 'VPC'
+    Type: AWS::EC2::Subnet
+  VPC:
+    Properties:
+      CidrBlock: 10.0.0.0/16
+      EnableDnsHostnames: 'true'
+      EnableDnsSupport: 'true'
+      InstanceTenancy: default
+    Type: AWS::EC2::VPC
+  InternetGateway:
+    Type: AWS::EC2::InternetGateway
+  Route:
+    DependsOn: AttachGateway
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref 'InternetGateway'
+      RouteTableId: !Ref 'RouteTable'
+    Type: AWS::EC2::Route
+  RouteTable:
+    Properties:
+      VpcId: !Ref 'VPC'
+    Type: AWS::EC2::RouteTable
+  SandboxPublicHostedZone:
+    Properties:
+      Name: sandbox.pilosa.com
+    Type: AWS::Route53::HostedZone
+  SubnetRouteTableAssociationB:
+    Properties:
+      RouteTableId: !Ref 'RouteTable'
+      SubnetId: !Ref 'SubnetB'
+    Type: AWS::EC2::SubnetRouteTableAssociation
