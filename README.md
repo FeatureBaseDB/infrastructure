@@ -1,11 +1,6 @@
 Pilosa Tools for Infrastructure and Operations
 ==============================================
 
-cfn-production
---------------
-
-Production Cloudformation template generator. Mostly DNS management.
-
 cfn-sandbox
 -----------
 
