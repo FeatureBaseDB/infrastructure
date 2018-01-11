@@ -1,14 +1,16 @@
+Parameters:
+  DomainName:
+    Default: sandbox.company.com
+    Description: FQDN for Route53 Hosted Zone
+    Type: String
+Outputs:
+    VPC:
+        Value: !Ref VPC
+    Subnet:
+        Value: !Ref Subnet
+    #NameServers:
+        #Value: !GetAtt HostedZone.NameServers
 Resources:
-  AttachGateway:
-    Properties:
-      InternetGatewayId: !Ref 'InternetGateway'
-      VpcId: !Ref 'VPC'
-    Type: AWS::EC2::VPCGatewayAttachment
-  SubnetB:
-    Properties:
-      CidrBlock: 10.0.1.0/24
-      VpcId: !Ref 'VPC'
-    Type: AWS::EC2::Subnet
   VPC:
     Properties:
       CidrBlock: 10.0.0.0/16
@@ -16,25 +18,35 @@ Resources:
       EnableDnsSupport: 'true'
       InstanceTenancy: default
     Type: AWS::EC2::VPC
+  Subnet:
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId: !Ref VPC
+    Type: AWS::EC2::Subnet
   InternetGateway:
     Type: AWS::EC2::InternetGateway
+  AttachGateway:
+    Properties:
+      InternetGatewayId: !Ref InternetGateway
+      VpcId: !Ref VPC
+    Type: AWS::EC2::VPCGatewayAttachment
   Route:
     DependsOn: AttachGateway
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
-      GatewayId: !Ref 'InternetGateway'
-      RouteTableId: !Ref 'RouteTable'
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref RouteTable
     Type: AWS::EC2::Route
   RouteTable:
     Properties:
-      VpcId: !Ref 'VPC'
+      VpcId: !Ref VPC
     Type: AWS::EC2::RouteTable
-  SandboxPublicHostedZone:
+  HostedZone:
     Properties:
-      Name: sandbox.pilosa.com
+      Name: !Ref DomainName
     Type: AWS::Route53::HostedZone
-  SubnetRouteTableAssociationB:
+  SubnetRouteTableAssociation:
     Properties:
-      RouteTableId: !Ref 'RouteTable'
-      SubnetId: !Ref 'SubnetB'
+      RouteTableId: !Ref RouteTable
+      SubnetId: !Ref Subnet
     Type: AWS::EC2::SubnetRouteTableAssociation
