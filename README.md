@@ -10,7 +10,7 @@ creating Pilosa clusters. See the [README](./cfn-sandbox-basic/README.md) in thi
 cfn-pilosa-qaz
 --------------
 
-Cloudformation tools for creating Pilosa clusters with [Qaz](https://github.com/daidokoro/qaz). Set up your sandbox first, then follow the instructions in this [README](./cfn-pilosa-qaz/readme.md)
+Cloudformation tools for creating Pilosa clusters with [Qaz](https://github.com/daidokoro/qaz). Set up your sandbox first, then follow the instructions in this [README](./cfn-pilosa-qaz/readme.md).
 
 cfn-pilosa [deprecated]
 ----------
