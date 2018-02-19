@@ -75,8 +75,8 @@ Resources:
 
           # install go
           mkdir -p /usr/local/go
-          wget https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
-          tar -C /usr/local -xzf go1.9.1.linux-amd64.tar.gz
+          wget https://storage.googleapis.com/golang/go1.10.linux-amd64.tar.gz
+          tar -C /usr/local -xzf go1.10.linux-amd64.tar.gz
           chown -R ubuntu:ubuntu /usr/local/go
           mkdir -p /home/ubuntu/go/src/github.com/pilosa
           mkdir -p /home/ubuntu/go/bin
@@ -156,8 +156,8 @@ Resources:
 
           # install go
           mkdir -p /usr/local/go
-          wget https://storage.googleapis.com/golang/go1.9.1.linux-amd64.tar.gz
-          tar -C /usr/local -xzf go1.9.1.linux-amd64.tar.gz
+          wget https://storage.googleapis.com/golang/go1.10.linux-amd64.tar.gz
+          tar -C /usr/local -xzf go1.10.linux-amd64.tar.gz
           chown -R ubuntu:ubuntu /usr/local/go
           mkdir -p /home/ubuntu/go/src/github.com/pilosa
           mkdir -p /home/ubuntu/go/bin
