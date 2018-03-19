@@ -201,7 +201,8 @@ Resources:
 
               [gossip]
               port = 12000
-              seeds = ["node0.${ClusterName}.${DomainName}:12000"]
+              seeds = ["node0.${ClusterName}.${DomainName}:12000"
+              {{- if gt $.stack.nodes 1 -}} , "node1.${ClusterName}.${DomainName}:12000" {{- end}}]
 
               [cluster]
               replicas = ${Replicas}
