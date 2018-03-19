@@ -201,14 +201,11 @@ Resources:
 
               [gossip]
               port = 12000
-              seed = "node0.${ClusterName}.${DomainName}:12000"
+              seeds = ["node0.${ClusterName}.${DomainName}:12000"]
 
               [cluster]
               replicas = ${Replicas}
-              hosts = [
-              {{- range $j, $blah := loop $.stack.nodes -}}
-                "node{{ $j }}.${ClusterName}.${DomainName}:10101",
-              {{- end }}]
+              coordinator = {{ if eq $i 0 }} true {{ else }} false {{ end }}
           EOF
 
 
