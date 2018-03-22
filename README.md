@@ -28,3 +28,8 @@ cfn-sandbox-dedicated [internal]
 
 Sandbox Cloudformation template generator for Pilosa Corp's dev sandbox with
 AWS dedicated servers. Outside users can ignore.
+
+local
+-----
+
+Utilities for running Pilosa locally
