@@ -1,0 +1,15 @@
+tickTime=2000
+dataDir=/var/lib/zookeeper/
+clientPort=2181
+initLimit=5
+syncLimit=2
+{% for server in zookeeper_hosts %}
+{% if server == inventory_hostname %}
+server.{{ loop.index }}=0.0.0.0:2888:3888
+{% else %}
+server.{{ loop.index }}=kafka{{ loop.index0 }}:2888:3888
+{% endif %}
+{% endfor %}
+autopurge.snapRetainCount=3
+autopurge.purgeInterval=24
+

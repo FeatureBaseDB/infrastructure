@@ -1,0 +1,14 @@
+[Unit]
+Description=Pilosa Server
+After=network.target
+StartLimitIntervalSec=30
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=ubuntu
+ExecStart=/home/ubuntu/go/bin/pilosa server --config=/etc/pilosa.cfg
+
+[Install]
+WantedBy=multi-user.target

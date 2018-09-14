@@ -1,0 +1,18 @@
+data-dir = "/home/ubuntu/pilosadata"
+bind = "{{ ansible_hostname }}:10101"
+log-path = "/home/ubuntu/pilosa.log"
+
+[gossip]
+  port = 12000
+  seeds = ["pilosa0:12000"]
+
+[metric]
+  diagnostics = false
+
+[cluster]
+  replicas = {{ replicas }}
+{% if current_hostname == hosts[0] %}
+  coordinator = true
+{% else %}
+  coordinator = false
+{% endif %}

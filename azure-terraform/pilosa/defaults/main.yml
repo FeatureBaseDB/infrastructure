@@ -1,0 +1,3 @@
+current_hostname: "{{ inventory_hostname }}"
+hosts: # must be set
+replicas: 1
