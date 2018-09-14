@@ -1,0 +1,4 @@
+.terraform*
+ans_inventory.ini
+ans_variables.yml
+terraform.tfstate*
