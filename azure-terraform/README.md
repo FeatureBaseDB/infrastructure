@@ -63,6 +63,7 @@ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/aaaaaaaa-
 
 Use the values output by that last command to create a terraform variable file like so:
 ```
+cd ~/go/src/github.com/pilosa/infrastructure/azure-terraform
 echo 'client_id = "<appID>"' > credentials-file.tfvars
 echo 'client_secret = "<password>"' >> credentials-file.tfvars
 echo 'tenant_id = "<tenant>"' >> credentials-file.tfvars
