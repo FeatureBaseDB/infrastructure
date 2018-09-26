@@ -6,6 +6,7 @@
 2. [Terraform](https://www.terraform.io/intro/getting-started/install.html)
 3. [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
 4. [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
+5. An ssh key on your local machine and ssh-agent. 
 
 # usage
 For testing and shortlived infrastructure, you may wish to deploy resources
@@ -16,6 +17,15 @@ command and control point for the rest of the infrastructure. The `ops`
 subdirectory contains terraform and ansible files for deploying and configuring
 "ops". Part of the configuration process is pulling this repository on to ops so
 that you may run the rest of these instructions from there.
+
+Some general notes:
+
+Both ops and pilosa terraform files support a "prefix" which you can use to
+differentiate deployments - if multiple people try to deploy with the same
+prefix, things will fail, so it's recommended that you set this to something
+unique to you when you're deploying shortlived infrastructure. You can do this
+by specifying a var file when doing terraform apply with the `-var-file` option. 
+See example.vars for a, uh, example.
 
 ## ops
 
@@ -57,6 +67,7 @@ echo 'client_id = "<appID>"' > credentials-file.tfvars
 echo 'client_secret = "<password>"' >> credentials-file.tfvars
 echo 'tenant_id = "<tenant>"' >> credentials-file.tfvars
 echo 'ops_ip = "OPS_IP"' >> credentials-file.tfvars
+echo 'subscription_id = "<id>"' >> credentials-file.tfvars
 ```
 
 
@@ -82,7 +93,7 @@ terraform apply
 Now we'll set up the ansible inventory file from the terraform outputs so that we can use ansible to configure our infrastructure.
 
 ```
-go install github.com/pilosa/infrastructure/cmd/ansibilize
+go get github.com/pilosa/infrastructure/cmd/ansibilize
 terraform output -json | ansibilize
 ```
 
