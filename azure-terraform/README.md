@@ -69,6 +69,7 @@ echo 'client_secret = "<password>"' >> credentials-file.tfvars
 echo 'tenant_id = "<tenant>"' >> credentials-file.tfvars
 echo 'ops_ip = "OPS_IP"' >> credentials-file.tfvars
 echo 'subscription_id = "<id>"' >> credentials-file.tfvars
+echo 'prefix_name = "<whatever_you_want>"' >> credentials-file.tfvars
 ```
 
 
