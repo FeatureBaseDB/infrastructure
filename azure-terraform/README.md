@@ -94,23 +94,3 @@ ansible-playbook -i ans_inventory.ini playbook.yml -f 10
 # you can avoid this either by disabling the check via ansible config, 
 # or setting up your known_hosts file properly ahead of time.
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
