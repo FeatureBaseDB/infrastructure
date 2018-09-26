@@ -1,0 +1,82 @@
+---
+- name: bootstrap
+  hosts: all
+  remote_user: ubuntu
+  tasks:
+    - name: add MS key
+      become: yes
+      become_method: sudo
+      apt_key:
+        url: https://packages.microsoft.com/keys/microsoft.asc
+        state: present
+    - name: add MS repository
+      become: yes
+      become_method: sudo
+      apt_repository:
+        repo: deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ bionic main
+        state: present
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - apt-transport-https
+          - make
+          - git
+          - htop
+          - jq
+          - golang
+          - ansible
+          - unzip
+          - azure-cli
+    - name: generate an ssh key
+      shell: ssh-keygen -b 2048 -t rsa -f ~/.ssh/id_rsa -q -N ""
+      args:
+        creates: ~/.ssh/id_rsa
+    - name: save pub key to var
+      shell: cat ~/.ssh/id_rsa.pub
+      register: public_key
+    - name: add it to authorized keys
+      authorized_key:
+        key: "{{ public_key.stdout }}"
+        user: ubuntu
+    - name: add go bin to PATH
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/profile
+        regexp: "^export PATH=.*go/bin"
+        line: "export PATH=$PATH:~/go/bin"
+- name: pull and install infrastructure repo
+  hosts: all
+  remote_user: ubuntu
+  tasks:
+    - name: pull repo
+      git:
+        dest: /home/ubuntu/go/src/github.com/pilosa/infrastructure
+        repo: https://github.com/pilosa/infrastructure.git
+- name: install terraform
+  hosts: all
+  remote_user: ubuntu
+  vars:
+    terraform_version: 0.11.7
+  tasks:
+    - name: Check terraform version
+      shell: "terraform --version 2>&1 | grep {{terraform_version}}"
+      failed_when: false
+      changed_when: false
+      register: terraform_versions_match
+    - include: download.yml
+      when: terraform_versions_match.rc != 0
+    - name: Unarchive Terraform archive
+      become: yes
+      become_method: sudo
+      unarchive:
+        src: /tmp/terraform-{{terraform_version}}.zip
+        dest: "/usr/bin/"
+        copy: no
+        mode: 0777
+      when: terraform_versions_match.rc != 0

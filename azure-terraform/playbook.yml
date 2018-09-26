@@ -1,0 +1,61 @@
+---
+- name: basics
+  hosts: all
+  remote_user: ubuntu
+  tasks:
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+- name: install go
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+  - include_role:
+      name: ansible-go
+    vars:
+      go_tarball: "go1.11.linux-amd64.tar.gz"
+      go_tarball_checksum: "sha256:b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499"
+      go_version_target: "go version go1.11 linux/amd64"
+      set_go_path: true
+- name: install pilosa
+  hosts: pilosa_ips
+  remote_user: ubuntu
+  tasks:
+    - name: pull pilosa
+      git:
+        dest: /home/ubuntu/go/src/github.com/pilosa/pilosa
+        repo: "https://github.com/pilosa/pilosa.git"
+    - name: install pilosa build deps
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install-build-deps'
+      args:
+        chdir: /home/ubuntu/go/src/github.com/pilosa/pilosa
+    - name: install pilosa
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
+      args:
+        chdir: /home/ubuntu/go/src/github.com/pilosa/pilosa
+    - include_role:
+        name: pilosa
+      vars:
+        hosts: "{{ groups.pilosa_ips | list }}"
+        replicas: 1
+- name: install zookeeper and kafka
+  hosts: kafka_ips
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  tasks:
+  - include_role:
+      name: confluent-ubuntu
+    vars:
+      zookeeper_hosts: "{{ groups.kafka_ips | list }}"
