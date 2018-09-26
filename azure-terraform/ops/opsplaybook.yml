@@ -43,6 +43,13 @@
       authorized_key:
         key: "{{ public_key.stdout }}"
         user: ubuntu
+    - name: add go bin to PATH
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/profile
+        regexp: "^export PATH=.*go/bin"
+        line: "export PATH=$PATH:~/go/bin"
 - name: pull and install infrastructure repo
   hosts: all
   remote_user: ubuntu
