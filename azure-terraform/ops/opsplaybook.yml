@@ -50,7 +50,7 @@
     - name: pull repo
       git:
         dest: /home/ubuntu/go/src/github.com/pilosa/infrastructure
-        repo: git@github.com:pilosa/infrastructure.git
+        repo: https://github.com/pilosa/infrastructure.git
 - name: install terraform
   hosts: all
   remote_user: ubuntu
