@@ -1,0 +1,9 @@
+bind = "{{ private_ip }}:10101"
+
+[cluster]
+
+  coordinator = {{ 'true' if instance_metadata.instance_index == '0' else 'false' }}
+
+[gossip]
+
+  seeds = {{ gossip_seeds }}
