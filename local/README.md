@@ -18,7 +18,7 @@ To guarantee integrity of data during a Pilosa version migration, I created some
 7. Diff the results output (`diff results-old.txt results-new.txt`).
 8. If the results are the same, shut down the cluster and consider the test a success.
 
-The tool is currently in the branch [codysoyland/compat-test](https://github.com/codysoyland/infrastructure/tree/compat-test/local). Usage is `./compat.sh /path/to/old-pilosa-binary /path/to/new-pilosa-binary`.
+Usage is `./compat.sh /path/to/old-pilosa-binary /path/to/new-pilosa-binary`.
 
 
 ### Usage

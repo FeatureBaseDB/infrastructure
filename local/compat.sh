@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# TODO: Modify compat tests to work with pilosa > 1.0.
+
 source pilosa.sh
 
 if [ ${#*} -lt 2 ]; then
