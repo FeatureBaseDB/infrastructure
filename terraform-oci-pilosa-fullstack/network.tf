@@ -8,4 +8,6 @@ module "network" {
   region = "${var.region}"
 
   compartment_ocid = "${var.compartment_ocid}"
+
+  subnet_count = 1
 }

@@ -7,5 +7,5 @@ output "public_ips" {
 }
 
 output "subnet_ocid" {
-  value = "${oci_core_subnet.PilosaSubnet.id}"
+  value = "${module.network.subnet_ocids_iad0[0]}"
 }

@@ -4,3 +4,7 @@ variable "fingerprint" {}
 variable "private_key_path" {}
 variable "region" {}
 variable "compartment_ocid" {}
+
+variable "subnet_count" {
+    default = 10
+}

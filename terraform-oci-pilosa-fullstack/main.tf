@@ -9,7 +9,7 @@ module "pilosa" {
 
   compartment_ocid = "${var.compartment_ocid}"
 
-  subnet_ocid = "${oci_core_subnet.PilosaSubnet.id}"
+  subnet_ocid = "${module.network.subnet_ocids_iad0[0]}"
 
   ssh_public_key = "${var.ssh_public_key}"
   availability_domain = "${var.availability_domain}"

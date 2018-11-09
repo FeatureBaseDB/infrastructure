@@ -1,5 +1,5 @@
 resource "oci_core_subnet" "PilosaSubnetIAD0" {
-  count = 10
+  count = "${var.subnet_count}"
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[0],"name")}"
   cidr_block          = "10.1.${count.index + 100}.0/24"
   display_name        = "PilosaSubnetIAD0${count.index + 100}"
@@ -11,7 +11,7 @@ resource "oci_core_subnet" "PilosaSubnetIAD0" {
 }
 
 resource "oci_core_subnet" "PilosaSubnetIAD1" {
-  count = 10
+  count = "${var.subnet_count}"
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[1],"name")}"
   cidr_block          = "10.1.${count.index + 110}.0/24"
   display_name        = "PilosaSubnetIAD1${count.index + 110}"
@@ -23,7 +23,7 @@ resource "oci_core_subnet" "PilosaSubnetIAD1" {
 }
 
 resource "oci_core_subnet" "PilosaSubnetIAD2" {
-  count = 10
+  count = "${var.subnet_count}"
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[2],"name")}"
   cidr_block          = "10.1.${count.index + 120}.0/24"
   display_name        = "PilosaSubnetIAD2${count.index + 120}"
