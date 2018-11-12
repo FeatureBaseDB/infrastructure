@@ -103,6 +103,17 @@
           gossip_seeds:
       notify:
         - restart pilosa
+    - name: update logging config
+      become: yes
+      become_method: sudo
+      copy:
+        content: |
+            if $programname == 'pilosa' then /var/log/pilosa/pilosa.log
+            & stop
+        dest: "/etc/rsyslog.d/pilosa.conf"
+        mode: 0644
+      notify:
+        - restart rsyslog
   handlers:
     - name: restart pilosa
       become: yes
@@ -111,3 +122,9 @@
         name: pilosa
         state: restarted
         daemon_reload: yes
+    - name: restart rsyslog
+      become: yes
+      become_method: sudo
+      systemd:
+        name: rsyslog
+        state: restarted
