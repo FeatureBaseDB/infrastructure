@@ -17,12 +17,22 @@
           - htop
           - jq
           - unzip
+          - python3-pip
+    - name: install python tools
+      become: yes
+      become_method: sudo
+      pip:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - oci-cli
+          - ansible
 - name: install terraform
   hosts: all
   remote_user: ubuntu
   gather_facts: no
   tasks:
-    - name: install terraform
+    - name: install terraform binary
       become: yes
       become_method: sudo
       unarchive:
