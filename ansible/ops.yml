@@ -1,0 +1,31 @@
+---
+- name: basics
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+          - unzip
+- name: install terraform
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install terraform
+      become: yes
+      become_method: sudo
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip
+        dest: /usr/bin
+        remote_src: True
