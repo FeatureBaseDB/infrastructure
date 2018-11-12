@@ -37,6 +37,17 @@ resource "oci_core_security_list" "PilosaSecurityList" {
   }
 
   ingress_security_rules {
+    protocol  = "17"         // udp
+    source    = "10.1.0.0/16"
+    stateless = false
+
+    udp_options {
+      "min" = 14000
+      "max" = 14000
+    }
+  }
+
+  ingress_security_rules {
     protocol  = "6"         // tcp
     source    = "0.0.0.0/0"
     stateless = false
