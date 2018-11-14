@@ -1,0 +1,34 @@
+---
+- name: basics
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+- name: install codespeed
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: install python
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - python
