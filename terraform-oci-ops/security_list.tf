@@ -31,6 +31,17 @@ resource "oci_core_security_list" "OpsSecurityList" {
     stateless = false
 
     tcp_options {
+      "min" = 8000
+      "max" = 8000
+    }
+  }
+
+  ingress_security_rules {
+    protocol  = "6"         // tcp
+    source    = "0.0.0.0/0"
+    stateless = false
+
+    tcp_options {
       "min" = 443
       "max" = 443
     }
