@@ -37,6 +37,17 @@ resource "oci_core_security_list" "OpsSecurityList" {
   }
 
   ingress_security_rules {
+    protocol  = "17"         // udp
+    source    = "10.1.0.0/16"
+    stateless = false
+
+    udp_options {
+      "min" = 6831
+      "max" = 6831
+    }
+  }
+
+  ingress_security_rules {
     protocol  = "6"         // tcp
     source    = "0.0.0.0/0"
     stateless = false

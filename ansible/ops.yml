@@ -36,6 +36,15 @@
         destination_port: 8000
         jump: ACCEPT
         action: insert
+    - name: open firewall port 6831
+      become: yes
+      become_method: sudo
+      iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: 6831
+        jump: ACCEPT
+        action: insert
     - name: install python tools
       become: yes
       become_method: sudo
