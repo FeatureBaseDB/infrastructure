@@ -1,0 +1,18 @@
+---
+- name: install pdk
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: pull pdk
+      git:
+        dest: /home/ubuntu/go/src/github.com/pilosa/pdk
+        repo: "{{ repo }}"
+        version: "{{ version }}"
+      vars:
+        repo: https://github.com/pilosa/pdk.git
+        version: master
+    - name: install pdk
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
+      args:
+        chdir: /home/ubuntu/go/src/github.com/pilosa/pdk
