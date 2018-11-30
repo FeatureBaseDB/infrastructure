@@ -1,3 +1,15 @@
+data "oci_core_volume_backup_policies" "GoldBackupPolicy" {
+  filter {
+    name   = "display_name"
+    values = ["gold"]
+  }
+}
+
+resource "oci_core_volume_backup_policy_assignment" "CodespeedBackupPolicyAssignment" {
+  asset_id  = "${oci_core_instance.CodespeedInstance.boot_volume_id}"
+  policy_id = "${data.oci_core_volume_backup_policies.GoldBackupPolicy.volume_backup_policies.0.id}"
+}
+
 resource "oci_core_instance" "CodespeedInstance" {
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.availability_domain - 1],"name")}"
   compartment_id      = "${var.compartment_ocid}"
