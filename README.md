@@ -33,3 +33,13 @@ local
 -----
 
 Utilities for running Pilosa locally
+
+ansible
+-------
+
+Ansible playbooks, used by Makefiles in terraform subdirectory
+
+terraform
+---------
+
+Terraform modules, including some helper Makefiles

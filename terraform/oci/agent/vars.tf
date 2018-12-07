@@ -26,6 +26,6 @@ variable "instance_image_ocid" {
 
 variable "ssh_public_key" {}
 
-variable "pilosa_cluster_size" {
-  default = "1"
+variable "hostname_prefix" {
+  default = "default"
 }

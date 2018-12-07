@@ -1,5 +1,5 @@
 module "pilosa" {
-  source = "../terraform-oci-pilosa"
+  source = "../../oci/pilosa"
 
   tenancy_ocid = "${var.tenancy_ocid}"
   user_ocid = "${var.user_ocid}"
