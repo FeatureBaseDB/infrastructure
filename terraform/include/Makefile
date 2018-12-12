@@ -8,7 +8,9 @@ export ANSIBLE_HOST_KEY_CHECKING=false
 
 TF_WORKSPACE=$(shell terraform workspace show)
 HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
-ANSIBLE_HOSTS=$(PUBLIC_IP),
+HOSTS=$(PUBLIC_IP),
+ANSIBLE_ARGS=
+ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
 
 # Halt the process if the command is not present (currently all checked commands have valid "--version" subcommands)
 require-%:
@@ -41,5 +43,13 @@ ssh: require-terraform require-jq
 provision-%: require-jq require-terraform require-ansible
 	ansible-playbook \
 		-e 'ansible_python_interpreter=/usr/bin/python3' \
-		-i $(ANSIBLE_HOSTS) \
-		$(ANSIBLE_ARGS) ../../../ansible/$*.yml
+		$(ANSIBLE_ARGS_FINAL) ../../../ansible/$*.yml
+
+run:
+	ansible \
+		all \
+		-i $(HOSTS) \
+		-e 'ansible_python_interpreter=/usr/bin/python3' \
+		-u ubuntu \
+		-m shell \
+		-a "$(CMD)"

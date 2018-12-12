@@ -8,12 +8,11 @@ PILOSA_GOSSIP_SEEDS=$(shell terraform output -json | jq -c "[.private_ips.value[
 PILOSA_PUBLIC_IP=$(shell terraform output -json | jq -r ".public_ips.value[$(N)]")
 PILOSA_PUBLIC_IPS=$(shell terraform output -json | jq -r ".public_ips.value|join(\",\")")
 PUBLIC_IP=$(PILOSA_PUBLIC_IP)
-ANSIBLE_HOSTS=$(PILOSA_PUBLIC_IPS),
-
-TF_ARGS=-var-file=vars.tfvars
-ANSIBLE_ARGS=-e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)'
+HOSTS=$(PILOSA_PUBLIC_IPS),
+ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)' $(ANSIBLE_ARGS)
 
 status: require-terraform
 	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
 
-provision: provision-pilosa
+provision:
+	$(MAKE) provision-pilosa

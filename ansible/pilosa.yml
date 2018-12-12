@@ -1,6 +1,7 @@
 ---
 - name: basics
   hosts: all
+  strategy: free
   remote_user: ubuntu
   gather_facts: no
   tasks:
@@ -45,6 +46,7 @@
         action: insert
 - name: install go
   hosts: all
+  strategy: free
   remote_user: ubuntu
   become: yes
   become_method: sudo
@@ -59,6 +61,7 @@
       set_go_path: true
 - name: install pilosa
   hosts: all
+  strategy: free
   remote_user: ubuntu
   gather_facts: no
   tasks:
