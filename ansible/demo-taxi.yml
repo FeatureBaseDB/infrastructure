@@ -7,12 +7,12 @@
     - name: pull demo-taxi
       git:
         dest: /home/ubuntu/go/src/github.com/pilosa/demo-taxi
-        repo: "{{ repo }}"
-        version: "{{ version }}"
+        repo: "{{ taxi_repo }}"
+        version: "{{ taxi_version }}"
         force: true
       vars:
-        repo: https://github.com/pilosa/demo-taxi.git
-        version: master
+        taxi_repo: https://github.com/pilosa/demo-taxi.git
+        taxi_version: master
     - name: install
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:

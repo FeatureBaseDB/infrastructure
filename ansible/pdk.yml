@@ -38,11 +38,11 @@
     - name: pull pdk
       git:
         dest: /home/ubuntu/go/src/github.com/pilosa/pdk
-        repo: "{{ repo }}"
-        version: "{{ version }}"
+        repo: "{{ pdk_repo }}"
+        version: "{{ pdk_version }}"
       vars:
-        repo: https://github.com/pilosa/pdk.git
-        version: master
+        pdk_repo: https://github.com/pilosa/pdk.git
+        pdk_version: master
     - name: install pdk
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:

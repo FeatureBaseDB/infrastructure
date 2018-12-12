@@ -79,11 +79,11 @@
     - name: pull codespeed
       git:
         dest: /home/ubuntu/codespeed
-        repo: "{{ repo }}"
-        version: "{{ version }}"
+        repo: "{{ codespeed_repo }}"
+        version: "{{ codespeed_version }}"
       vars:
-        repo: https://github.com/pilosa/codespeed.git
-        version: test
+        codespeed_repo: https://github.com/pilosa/codespeed.git
+        codespeed_version: test
     - name: install virtualenv
       pip:
         name: virtualenv

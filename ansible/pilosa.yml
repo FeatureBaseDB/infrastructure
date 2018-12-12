@@ -78,11 +78,11 @@
     - name: pull pilosa
       git:
         dest: /home/ubuntu/go/src/github.com/pilosa/pilosa
-        repo: "{{ repo }}"
-        version: "{{ version }}"
+        repo: "{{ pilosa_repo }}"
+        version: "{{ pilosa_version }}"
       vars:
-        repo: https://github.com/pilosa/pilosa.git
-        version: master
+        pilosa_repo: https://github.com/pilosa/pilosa.git
+        pilosa_version: master
       notify:
         - restart pilosa
     - name: install pilosa build deps
