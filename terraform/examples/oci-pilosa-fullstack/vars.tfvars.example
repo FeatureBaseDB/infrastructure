@@ -1,0 +1,10 @@
+tenancy_ocid="ocid1.tenancy.oc1..aaaaaaaa6cbn5b6obdpqkdyycybvvlunlxx3hxmdfxdlxytl4nwzh6giajla"
+compartment_ocid="ocid1.compartment.oc1..aaaaaaaa6pjuy4mc2l62ptvybbim7tk52ed4qriegxjfpedsirrnbx6mavca"
+user_ocid="ocid1.user.oc1..aaaaaaaahzwjfwf6bxs4eo52wpvfuxcnafbtfo6d453oj354remsaglvm5ra"
+fingerprint="d7:bc:83:a7:5a:76:92:66:cd:c2:b8:26:2d:0a:8f:6e"
+private_key_path="/Users/cody/.oci/oci_api_key.pem"
+
+ssh_public_key="/Users/cody/.ssh/id_rsa.pub"
+region="us-ashburn-1"
+pilosa_cluster_size="2"
+instance_shape="VM.DenseIO2.24"
