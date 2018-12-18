@@ -10,7 +10,7 @@ ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(P
 
 provision:
 	$(MAKE) provision-pilosa
-	$(MAKE) provision-agent provision-pdk ANSIBLE_HOSTS=$(AGENT_PUBLIC_IP),
+	$(MAKE) provision-agent provision-pdk HOSTS=$(AGENT_PUBLIC_IP),
 
 ssh-agent:
 	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP)

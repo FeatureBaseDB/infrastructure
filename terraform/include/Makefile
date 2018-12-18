@@ -3,36 +3,38 @@
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
 export TF_VAR_hostname_prefix=$(HOSTNAME_PREFIX)
-TF_ARGS=-var-file=vars.tfvars
-export ANSIBLE_HOST_KEY_CHECKING=false
-
+TF_ARGS=
+TF_ARGS_FINAL=-var-file=vars.tfvars $(TF_ARGS)
 TF_WORKSPACE=$(shell terraform workspace show)
-HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
-HOSTS=$(PUBLIC_IP),
+
+export ANSIBLE_HOST_KEY_CHECKING=false
 ANSIBLE_ARGS=
 ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
 
+HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
+HOSTS=$(PUBLIC_IP),
+
 # Halt the process if the command is not present (currently all checked commands have valid "--version" subcommands)
 require-%:
-	@$* --version &> /dev/null
+	@command -v $* &>/dev/null
 
 init: require-terraform
 	terraform init
 
 plan: require-terraform
-	terraform plan $(TF_ARGS)
+	terraform plan $(TF_ARGS_FINAL)
 
 apply: require-terraform
-	terraform apply $(TF_ARGS)
+	terraform apply $(TF_ARGS_FINAL)
 
 plan-destroy: require-terraform
-	terraform plan -destroy $(TF_ARGS)
+	terraform plan -destroy $(TF_ARGS_FINAL)
 
 destroy: require-terraform
-	terraform destroy $(TF_ARGS)
+	terraform destroy $(TF_ARGS_FINAL)
 
 output: require-terraform
-	terraform output -state=$(TF_STATE)
+	terraform output -state=$(TF_STATE) -json
 
 ssh: require-terraform require-jq
 	ssh -o UserKnownHostsFile=/dev/null \

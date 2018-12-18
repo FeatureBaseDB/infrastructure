@@ -17,6 +17,7 @@
           - git
           - htop
           - jq
+          - gcc
     - name: open firewall port 10101
       become: yes
       become_method: sudo
