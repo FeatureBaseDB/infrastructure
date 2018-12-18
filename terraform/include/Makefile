@@ -1,4 +1,4 @@
-.PHONY: require-% init plan apply refresh plan-destroy destroy ssh status provision-%
+.PHONY: require-% init plan apply refresh plan-destroy destroy ssh status provision provision-%
 
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
@@ -13,6 +13,8 @@ ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
 
 HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
+
+PROVISION=
 
 # Halt the process if the command is not present (currently all checked commands have valid "--version" subcommands)
 require-%:
@@ -46,6 +48,9 @@ provision-%: require-jq require-terraform require-ansible
 	ansible-playbook \
 		-e 'ansible_python_interpreter=/usr/bin/python3' \
 		$(ANSIBLE_ARGS_FINAL) ../../../ansible/$*.yml
+
+provision:
+	$(MAKE) $(PROVISION)
 
 run:
 	ansible \

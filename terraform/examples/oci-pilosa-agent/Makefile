@@ -8,7 +8,9 @@ AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
 HOSTS=$(PILOSA_PUBLIC_IPS),
 ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)' $(ANSIBLE_ARGS)
 
-provision:
+PROVISION = provision-pilosa-agent
+
+provision-pilosa-agent:
 	$(MAKE) provision-pilosa
 	$(MAKE) provision-agent provision-pdk HOSTS=$(AGENT_PUBLIC_IP),
 

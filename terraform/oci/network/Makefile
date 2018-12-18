@@ -1,3 +1,3 @@
 include ../../include/Makefile
 
-provision: provision-network
+PROVISION += provision-network

@@ -1,3 +1,3 @@
 include ../../include/Makefile
 
-provision: provision-codespeed
+PROVISION += provision-codespeed

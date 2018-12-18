@@ -14,5 +14,4 @@ ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(P
 status: require-terraform
 	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
 
-provision:
-	$(MAKE) provision-pilosa
+PROVISION += provision-pilosa
