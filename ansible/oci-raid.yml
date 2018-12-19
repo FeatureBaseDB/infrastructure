@@ -1,0 +1,20 @@
+---
+- name: Setup RAID array
+  hosts: all
+  remote_user: ubuntu
+  become: true
+  roles:
+    # to install: ansible-galaxy install git+https://github.com/mrlesmithjr/ansible-mdadm.git
+    - role: ansible-mdadm
+      mdadm_arrays:
+        - name: 'md0'
+          devices:
+            - '/dev/nvme0n1'
+            - '/dev/nvme1n1'
+            - '/dev/nvme2n1'
+            - '/dev/nvme3n1'
+          filesystem: 'xfs'
+          filesystem_opts: ''
+          level: '0'
+          mountpoint: '/mnt/md0'
+          state: 'present'

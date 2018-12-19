@@ -1,0 +1,136 @@
+---
+- name: basics
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+          - python3-pip
+          - postgresql
+          - postgresql-contrib
+          - python3-psycopg2
+          - libpq-dev
+          - nginx
+    - name: open firewall port 80
+      become: yes
+      become_method: sudo
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: 80
+        jump: ACCEPT
+        action: insert
+
+- name: setup database
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: start postgres
+      service: name=postgresql state=started enabled=yes
+    - name: setup postgres db
+      sudo_user: postgres
+      postgresql_db: name=codespeed
+    - name: setup postgres user
+      sudo_user: postgres
+      postgresql_user: name=ubuntu password=password
+
+- name: setup nginx
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: setup nginx config
+      template:
+        src: "codespeed.nginx.j2"
+        dest: "/etc/nginx/conf.d/codespeed.conf"
+        mode: 0755
+      notify:
+        - restart nginx
+
+  handlers:
+    - name: restart nginx
+      become: yes
+      become_method: sudo
+      systemd:
+        name: nginx
+        state: restarted
+
+- name: install codespeed
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: pull codespeed
+      git:
+        dest: /home/ubuntu/codespeed
+        repo: "{{ codespeed_repo }}"
+        version: "{{ codespeed_version }}"
+      vars:
+        codespeed_repo: https://github.com/pilosa/codespeed.git
+        codespeed_version: test
+    - name: install virtualenv
+      pip:
+        name: virtualenv
+    - name: setup virtualenv
+      pip:
+        requirements: /home/ubuntu/codespeed/requirements.txt
+        virtualenv: /home/ubuntu/codespeed/venv/
+        virtualenv_python: python2.7
+
+- name: setup systemd
+  hosts: all
+  remote_user: ubuntu
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+    - name: update codespeed systemd service
+      become: yes
+      become_method: sudo
+      template:
+        src: "codespeed.service.j2"
+        dest: "/etc/systemd/system/codespeed.service"
+        mode: 0755
+      notify:
+        - restart codespeed
+    - name: update logging config
+      become: yes
+      become_method: sudo
+      copy:
+        content: |
+            if $programname == 'codespeed' then /var/log/codespeed/codespeed.log
+            & stop
+        dest: "/etc/rsyslog.d/codespeed.conf"
+        mode: 0644
+      notify:
+        - restart rsyslog
+
+  handlers:
+    - name: restart codespeed
+      become: yes
+      become_method: sudo
+      systemd:
+        name: codespeed
+        state: restarted
+    - name: restart rsyslog
+      become: yes
+      become_method: sudo
+      systemd:
+        name: rsyslog
+        state: restarted

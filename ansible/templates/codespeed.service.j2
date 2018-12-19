@@ -1,0 +1,26 @@
+[Unit]
+Description=codespeed
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+
+Restart=on-failure
+RestartSec=5
+
+WorkingDirectory=/home/ubuntu/codespeed
+ExecStart=/home/ubuntu/codespeed/venv/bin/gunicorn sample_project.wsgi --pythonpath=/home/ubuntu/codespeed
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p /var/log/codespeed
+ExecStartPre=/bin/chown -R syslog:adm /var/log/codespeed
+ExecStartPre=/bin/chmod 755 /var/log/codespeed
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=codespeed
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,19 @@
+---
+- name: install demo-taxi
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: pull demo-taxi
+      git:
+        dest: /home/ubuntu/go/src/github.com/pilosa/demo-taxi
+        repo: "{{ taxi_repo }}"
+        version: "{{ taxi_version }}"
+        force: true
+      vars:
+        taxi_repo: https://github.com/pilosa/demo-taxi.git
+        taxi_version: master
+    - name: install
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
+      args:
+        chdir: /home/ubuntu/go/src/github.com/pilosa/demo-taxi

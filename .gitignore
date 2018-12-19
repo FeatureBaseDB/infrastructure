@@ -2,3 +2,5 @@
 ans_inventory.ini
 ans_variables.yml
 terraform.tfstate*
+*.tfvars
+*.retry

@@ -1,0 +1,23 @@
+{
+  "stats": {
+    "min": 955117,
+    "max": 8098465,
+    "mean": 1288840,
+    "total-time": 1288677700,
+    "num": 1000,
+    "all": []
+  },
+  "responses": [],
+  "extra": {},
+  "agentnum": 0,
+  "pilosa-version": "",
+  "configuration": {
+    "name": "basic-query",
+    "min-row-id": 0,
+    "iterations": 1000,
+    "num-args": 10,
+    "query": "Union",
+    "index": "ibench",
+    "field": "fbench"
+  }
+}

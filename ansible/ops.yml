@@ -1,0 +1,68 @@
+---
+- name: basics
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install software
+      become: yes
+      become_method: sudo
+      apt:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+          - unzip
+          - python3-pip
+    - name: open firewall port 80
+      become: yes
+      become_method: sudo
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: 80
+        jump: ACCEPT
+        action: insert
+    - name: open firewall port 8000
+      become: yes
+      become_method: sudo
+      iptables:
+        chain: INPUT
+        protocol: tcp
+        destination_port: 8000
+        jump: ACCEPT
+        action: insert
+    - name: open firewall port 6831
+      become: yes
+      become_method: sudo
+      iptables:
+        chain: INPUT
+        protocol: udp
+        destination_port: 6831
+        jump: ACCEPT
+        action: insert
+    - name: install python tools
+      become: yes
+      become_method: sudo
+      pip:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - oci-cli
+          - ansible
+- name: install terraform
+  hosts: all
+  remote_user: ubuntu
+  gather_facts: no
+  tasks:
+    - name: install terraform binary
+      become: yes
+      become_method: sudo
+      unarchive:
+        src: https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_linux_amd64.zip
+        dest: /usr/bin
+        remote_src: True
