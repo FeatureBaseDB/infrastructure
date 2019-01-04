@@ -10,6 +10,7 @@ TF_WORKSPACE=$(shell terraform workspace show)
 export ANSIBLE_HOST_KEY_CHECKING=false
 ANSIBLE_ARGS=
 ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
+ANSIBLE_DIR=../../../ansible
 
 HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
@@ -47,7 +48,7 @@ ssh: require-terraform require-jq
 provision-%: require-jq require-terraform require-ansible
 	ansible-playbook \
 		-e 'ansible_python_interpreter=/usr/bin/python3' \
-		$(ANSIBLE_ARGS_FINAL) ../../../ansible/$*.yml
+		$(ANSIBLE_ARGS_FINAL) $(ANSIBLE_DIR)/$*.yml
 
 provision:
 	$(MAKE) $(PROVISION)
