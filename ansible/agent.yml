@@ -47,8 +47,10 @@
           - oci-cli
           - ansible
     - name: set up pilosa hosts environment variable
+      become: yes
+      become_method: sudo
       lineinfile:
-        path: /home/ubuntu/.bashrc
+        path: /etc/profile
         line: "export PILOSA_HOSTS={{ pilosa_hosts }}"
         regexp: "export PILOSA_HOSTS"
       vars:
