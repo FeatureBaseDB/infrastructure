@@ -36,7 +36,7 @@ destroy: require-terraform
 	terraform destroy $(TF_ARGS_FINAL)
 
 output: require-terraform
-	terraform output -state=$(TF_STATE) -json
+	@terraform output -state=$(TF_STATE) -json
 
 ssh: require-terraform require-jq
 	ssh -o UserKnownHostsFile=/dev/null \
