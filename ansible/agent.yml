@@ -46,6 +46,15 @@
         packages:
           - oci-cli
           - ansible
+    - name: set up pilosa hosts environment variable
+      become: yes
+      become_method: sudo
+      lineinfile:
+        path: /etc/profile
+        line: "export PILOSA_HOSTS={{ pilosa_hosts }}"
+        regexp: "export PILOSA_HOSTS"
+      vars:
+        pilosa_hosts: "localhost:10101"
 - name: install terraform
   hosts: all
   remote_user: ubuntu

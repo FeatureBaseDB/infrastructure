@@ -14,6 +14,25 @@
         taxi_repo: https://github.com/pilosa/demo-taxi.git
         taxi_version: master
     - name: install
-      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install-statik; make install'
       args:
         chdir: /home/ubuntu/go/src/github.com/pilosa/demo-taxi
+    - name: update demo-taxi systemd service
+      become: yes
+      become_method: sudo
+      template:
+        src: "demo-taxi.service.j2"
+        dest: "/etc/systemd/system/demo-taxi.service"
+        mode: 0755
+      vars:
+        pilosa_location: "{{ pilosa_hosts.split(',')[0] }}"
+      notify:
+        - restart demo-taxi
+  handlers:
+    - name: restart demo-taxi
+      become: yes
+      become_method: sudo
+      systemd:
+        name: demo-taxi
+        state: restarted
+        daemon_reload: yes

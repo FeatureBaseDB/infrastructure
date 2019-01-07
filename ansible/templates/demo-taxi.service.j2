@@ -1,0 +1,24 @@
+[Unit]
+Description=demo-taxi
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+Group=ubuntu
+LimitNOFILE=1048576
+LimitNPROC=1048576
+
+Restart=on-failure
+RestartSec=5
+
+ExecStart=/home/ubuntu/go/bin/demo-taxi --pilosa={{ pilosa_location }}
+
+# make sure log directory exists and owned by syslog
+PermissionsStartOnly=true
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=demo-taxi
+
+[Install]
+WantedBy=multi-user.target
