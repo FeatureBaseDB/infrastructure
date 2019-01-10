@@ -32,6 +32,12 @@ variable "pilosa_cluster_size" {
   default = "3"
 }
 
+variable "agent_vm_size" {
+  description = "Azure VM size to use for agent."
+  type = "string"
+  default = "Standard_D4s_v3" # 4vcpu 16GB
+}
+
 variable "pilosa_vm_size" {
   description = "Azure VM size to use for Pilosa nodes."
   type = "string"

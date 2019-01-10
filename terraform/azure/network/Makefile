@@ -1,3 +1,3 @@
 include ../../include/Makefile
 
-PROVISION += provision-pilosa
+PROVISION += provision-network

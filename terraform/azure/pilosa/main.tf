@@ -1,7 +1,7 @@
 resource "azurerm_public_ip" "pilosa" {
   name                         = "${var.prefix_name}-pilosa-ip${count.index}"
-  location                     = "${azurerm_resource_group.rg.location}"
-  resource_group_name          = "${azurerm_resource_group.rg.name}"
+  location                     = "${var.resource_group_location}"
+  resource_group_name          = "${var.resource_group_name}"
   public_ip_address_allocation = "Dynamic"
   idle_timeout_in_minutes      = 30
   count = "${var.pilosa_cluster_size}"
@@ -9,20 +9,20 @@ resource "azurerm_public_ip" "pilosa" {
 
 data "azurerm_public_ip" "pilosa" {
   name = "${azurerm_public_ip.pilosa.*.name[count.index]}"
-  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  resource_group_name   = "${var.resource_group_name}"
   count = "${var.pilosa_cluster_size}"
   depends_on = ["azurerm_virtual_machine.pilosa"]
 }
 
 resource "azurerm_network_interface" "pilosa_iface" {
   name                = "${var.prefix_name}-pilosa-iface${count.index}"
-  location            = "${azurerm_resource_group.rg.location}"
-  resource_group_name = "${azurerm_resource_group.rg.name}"
+  location            = "${var.resource_group_location}"
+  resource_group_name = "${var.resource_group_name}"
   count = "${var.pilosa_cluster_size}"
 
   ip_configuration {
     name                          = "${var.prefix_name}-pilosa-ipconfig${count.index}"
-    subnet_id                     = "${azurerm_subnet.subnet.id}"
+    subnet_id                     = "${var.subnet_id}"
     private_ip_address_allocation = "dynamic"
     public_ip_address_id = "${azurerm_public_ip.pilosa.*.id[count.index]}"
   }
@@ -30,8 +30,8 @@ resource "azurerm_network_interface" "pilosa_iface" {
 
 resource "azurerm_virtual_machine" "pilosa" {
   name                  = "${var.prefix_name}-pilosa-vm${count.index}"
-  location              = "${azurerm_resource_group.rg.location}"
-  resource_group_name   = "${azurerm_resource_group.rg.name}"
+  location              = "${var.resource_group_location}"
+  resource_group_name   = "${var.resource_group_name}"
   network_interface_ids = ["${azurerm_network_interface.pilosa_iface.*.id[count.index]}"]
   vm_size               = "${var.pilosa_vm_size}"
   count = "${var.pilosa_cluster_size}"
@@ -65,7 +65,7 @@ resource "azurerm_virtual_machine" "pilosa" {
   os_profile_linux_config {
     disable_password_authentication = true
     ssh_keys {
-      key_data = "${file(pathexpand(var.pubkey_file))}"
+      key_data = "${file(pathexpand(var.ssh_public_key))}"
       path = "/home/ubuntu/.ssh/authorized_keys"
     }
   }

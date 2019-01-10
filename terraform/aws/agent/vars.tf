@@ -22,18 +22,6 @@ variable "resource_group_location" {
   default = "South Central US"
 }
 
-variable "ssh_public_key" {
+variable "pubkey_file" {
   default = "~/.ssh/id_rsa.pub"
-}
-
-variable "agent_vm_size" {
-  description = "Azure VM size to use for agent."
-  type = "string"
-  default = "Standard_D4s_v3" # 4vcpu 16GB
-}
-
-variable "subnet_id" {
-}
-
-variable "resource_group_name" {
 }

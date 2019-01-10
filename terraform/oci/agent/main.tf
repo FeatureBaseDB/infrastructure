@@ -1,14 +1,14 @@
 resource "oci_core_instance" "AgentInstance" {
   availability_domain = "${lookup(data.oci_identity_availability_domains.ADs.availability_domains[var.availability_domain - 1],"name")}"
   compartment_id      = "${var.compartment_ocid}"
-  display_name        = "${var.hostname_prefix}-agent"
+  display_name        = "${var.prefix_name}-agent"
   shape               = "${var.instance_shape}"
 
   create_vnic_details {
     subnet_id        = "${var.subnet_ocid}"
     display_name     = "primaryvnic"
     assign_public_ip = true
-    hostname_label   = "${var.hostname_prefix}-agent"
+    hostname_label   = "${var.prefix_name}-agent"
   }
 
   source_details {

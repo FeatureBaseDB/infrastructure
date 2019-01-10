@@ -30,6 +30,6 @@ variable "pilosa_cluster_size" {
   default = "1"
 }
 
-variable "hostname_prefix" {
+variable "prefix_name" {
   default = "default"
 }

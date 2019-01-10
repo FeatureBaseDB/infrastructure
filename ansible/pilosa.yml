@@ -66,15 +66,11 @@
   remote_user: ubuntu
   gather_facts: no
   tasks:
-    - name: get instance_metadata
-      shell: curl -ss -L http://169.254.169.254/opc/v1/instance/metadata/
-      register: instance_metadata
     - name: get private_ip
-      shell: hostname -I | cut -d" " -f1
+      shell: hostname -I | cut -d " " -f1
       register: private_ip
     - name: set facts
       set_fact:
-        instance_metadata: "{{ instance_metadata.stdout | from_json }}"
         private_ip: "{{ private_ip.stdout }}"
     - name: pull pilosa
       git:

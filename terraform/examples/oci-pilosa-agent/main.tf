@@ -1,3 +1,11 @@
+#terraform {
+#  backend "s3" {
+#    bucket = "pilosa-terraform"
+#    key    = "cody/oci-pilosa-agent"
+#    region = "us-east-1"
+#  }
+#}
+
 module "pilosa" {
   source = "../../oci/pilosa"
 
@@ -16,7 +24,7 @@ module "pilosa" {
   instance_shape = "${var.instance_shape}"
   instance_image_ocid = "${var.instance_image_ocid}"
   pilosa_cluster_size = "${var.pilosa_cluster_size}"
-  hostname_prefix = "${var.hostname_prefix}"
+  prefix_name = "${var.prefix_name}"
 }
 
 module "agent" {
@@ -36,5 +44,5 @@ module "agent" {
   availability_domain = "${var.availability_domain}"
   instance_shape = "${var.agent_instance_shape}"
   instance_image_ocid = "${var.instance_image_ocid}"
-  hostname_prefix = "${var.hostname_prefix}"
+  prefix_name = "${var.prefix_name}"
 }
