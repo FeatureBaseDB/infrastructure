@@ -1,5 +1,15 @@
-variable "agent_instance_type" {
+variable "pilosa_cluster_size" {
+  description = "Number of Pilosa instances to launch"
+  type = "string"
+  default = "3"
+}
+
+variable "pilosa_instance_type" {
   default = "r4.2xlarge"
+}
+
+variable "agent_instance_type" {
+  default = "c5.large"
 }
 
 variable "prefix_name" {
