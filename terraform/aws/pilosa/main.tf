@@ -1,21 +1,16 @@
-resource "aws_placement_group" "pilosa-pg" {
-  name     = "${var.prefix_name}-pg"
-  strategy = "cluster"
-}
-
 resource "aws_instance" "pilosa" {
   ami           = "ami-6dfe5010"
   instance_type = "${var.pilosa_instance_type}"
   ebs_optimized = true
-  placement_group = "${var.prefix_name}-pg"
+  placement_group = "${var.placement_group_id}"
 
   connection {
     user = "ubuntu"
   }
 
   key_name = "${aws_key_pair.auth.id}"
-  vpc_security_group_ids = ["${aws_security_group.default.id}"]
-  subnet_id = "${aws_subnet.default.id}"
+  vpc_security_group_ids = ["${var.security_group_id}"]
+  subnet_id = "${var.subnet_id}"
 
   root_block_device {
     volume_type = "io1"
@@ -28,11 +23,6 @@ resource "aws_instance" "pilosa" {
   }
 
   count = "${var.pilosa_cluster_size}"
-
-  user_data = <<-EOF
-                #!/bin/bash
-                echo ${count.index} > /etc/instance-index
-                EOF
 }
 
 resource "aws_key_pair" "auth" {

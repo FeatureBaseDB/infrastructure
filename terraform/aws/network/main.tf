@@ -21,8 +21,10 @@ resource "aws_route" "internet_access" {
 # Create a subnet to launch our instances into
 resource "aws_subnet" "default" {
   vpc_id                  = "${aws_vpc.default.id}"
-  cidr_block              = "10.0.1.0/24"
+  cidr_block              = "10.0.${count.index + 100}.0/24"
   map_public_ip_on_launch = true
+
+  count = 10
 }
 
 resource "aws_security_group" "default" {
@@ -77,4 +79,9 @@ resource "aws_security_group" "default" {
     protocol    = "-1"
     cidr_blocks = ["10.0.0.0/16"]
   }
+}
+
+resource "aws_placement_group" "pg" {
+  name     = "${var.prefix_name}-pg"
+  strategy = "cluster"
 }
