@@ -1,8 +1,8 @@
-.PHONY: require-% init plan apply refresh plan-destroy destroy ssh status provision provision-%
+.PHONY: require-% init plan apply refresh plan-destroy destroy ssh provision provision-%
 
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
-export TF_VAR_hostname_prefix=$(HOSTNAME_PREFIX)
+export TF_VAR_prefix_name=$(PREFIX_NAME)
 TF_ARGS=
 TF_ARGS_FINAL=-var-file=vars.tfvars $(TF_ARGS)
 TF_WORKSPACE=$(shell terraform workspace show)
@@ -10,8 +10,9 @@ TF_WORKSPACE=$(shell terraform workspace show)
 export ANSIBLE_HOST_KEY_CHECKING=false
 ANSIBLE_ARGS=
 ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
+ANSIBLE_DIR=../../../ansible
 
-HOSTNAME_PREFIX=$(USER)-$(TF_WORKSPACE)
+PREFIX_NAME=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
 
 PROVISION=
@@ -47,7 +48,10 @@ ssh: require-terraform require-jq
 provision-%: require-jq require-terraform require-ansible
 	ansible-playbook \
 		-e 'ansible_python_interpreter=/usr/bin/python3' \
-		$(ANSIBLE_ARGS_FINAL) ../../../ansible/$*.yml
+		$(ANSIBLE_ARGS_FINAL) $(ANSIBLE_DIR)/$*.yml
+
+inventory.json:
+	$(MAKE) output | jq '.pilosa_public_ips.value | map({(.): null}) | add | {pilosa: {hosts: .}}' > $@
 
 provision:
 	$(MAKE) $(PROVISION)

@@ -26,6 +26,6 @@ variable "instance_image_ocid" {
 
 variable "ssh_public_key" {}
 
-variable "hostname_prefix" {
+variable "prefix_name" {
   default = "default"
 }
