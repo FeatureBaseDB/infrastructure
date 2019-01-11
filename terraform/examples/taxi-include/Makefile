@@ -7,9 +7,10 @@ fakeusers:
 taxi-log:
 	$(MAKE) ssh-agent CMD='tail taxi.out'
 
+TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 bench:
-	scp benchmark.sh ubuntu@$(AGENT_PUBLIC_IP):
+	scp $(TAXI_MAKE_DIR)/benchmark.sh ubuntu@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > benchrun.jsons'
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m' | tee ./gobenchpilosa.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out

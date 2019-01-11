@@ -23,6 +23,7 @@ resource "oci_core_instance" "PilosaInstance" {
   source_details {
     source_type = "image"
     source_id   = "${var.instance_image_ocid[var.region]}"
+    boot_volume_size_in_gbs = "140"
   }
 
   metadata {
