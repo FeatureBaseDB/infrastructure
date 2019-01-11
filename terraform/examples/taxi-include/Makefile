@@ -1,5 +1,8 @@
 taxi:
-	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 2097152 -c 12 -e 2 &> taxi.out &'
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
+
+fakeusers:
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
 
 taxi-log:
 	$(MAKE) ssh-agent CMD='tail taxi.out'
@@ -13,3 +16,9 @@ bench:
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
 	scp ubuntu@$(AGENT_PUBLIC_IP):benchrun.jsons .
 
+
+nuke-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
+
+restart-pilosa:
+	$(MAKE) run CMD="sudo service pilosa restart"
