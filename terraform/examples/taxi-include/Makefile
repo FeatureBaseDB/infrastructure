@@ -16,10 +16,17 @@ bench:
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
 	scp ubuntu@$(AGENT_PUBLIC_IP):benchrun.jsons .
-
+	$(MAKE) parse_go_bench
 
 nuke-pilosa:
 	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
 
 restart-pilosa:
 	$(MAKE) run CMD="sudo service pilosa restart"
+
+PARSE_GO_BENCH=jq -R 'capture("(?<name>[^\\s]*)[\\s]+(?<iterations>\\d+)[\t ]+(?<ns\/op>\\d+)[\\s]ns/op.*")'
+
+parse_go_bench:
+	cat gobenchpilosa.out | $(PARSE_GO_BENCH) | tee gobenchpilosa.out.jsons
+	cat gobenchroaring.out | $(PARSE_GO_BENCH) | tee gobenchroaring.out.jsons
+	cat gobenchinmem.out | $(PARSE_GO_BENCH) | tee gobenchinmem.out.jsons
