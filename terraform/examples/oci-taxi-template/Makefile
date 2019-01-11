@@ -1,6 +1,7 @@
 include ../../oci/pilosa/Makefile
 
 AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
+CLOUD=OCI
 
 PROVISION = provision-pilosa-agent
 

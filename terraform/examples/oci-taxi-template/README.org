@@ -23,14 +23,15 @@ Cost is for linux on-demand.
 1. Clone github.com/pilosa/infrastructure and change into it.
 2. =cd terraform/examples=
 3. copy oci-taxi-template to a descriptively named dir e.g. oci-taxi-DenseIO2.16-3node
-4. copy vars.tfvars.example to vars.tfvars and change stuff
-5. create a new workspace: e.g. =terraform workspace new taxi-DenseIO16-3node=
-6. =make apply=
-7. =make provision=
-8. =make taxi=
-9. Wait for taxi load to complete - use =make taxi-log= to check status.
-10. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
-11. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the demo (nice for generating big queries). Note the comma after agent_ip
-12. =make bench= This will copy a bunch of benchmark data to the local dir.
+4. edit the Makefile and add SHAPE and COUNT variables with the instance type/shape and the number of instances
+5. copy vars.tfvars.example to vars.tfvars and change stuff
+6. create a new workspace: e.g. =terraform workspace new taxi-DenseIO16-3node=
+7. =make apply=
+8. =make provision=
+9. =make taxi=
+10. Wait for taxi load to complete - use =make taxi-log= to check status.
+11. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
+12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the demo (nice for generating big queries). Note the comma after agent_ip
+13. =make bench= This will copy a bunch of benchmark data to the local dir.
 
 
