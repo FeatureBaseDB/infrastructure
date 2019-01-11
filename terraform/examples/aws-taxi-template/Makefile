@@ -1,4 +1,4 @@
-include ../../oci/pilosa/Makefile
+include ../../aws/pilosa/Makefile
 
 AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
 
