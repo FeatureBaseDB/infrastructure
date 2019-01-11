@@ -75,17 +75,19 @@
     - name: get nvme devices
       become: yes
       become_method: sudo
-      shell: fdisk -l | grep nvme | cut -d' ' -f2 | sed s/:// | xargs | sed 's/ /,/g'
+      shell: fdisk -l | grep 'Disk /dev/nvme' | cut -d' ' -f2 | sed s/:// | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: create volume group
+      ignore_errors: True
       when: nvme_disks.stdout|length > 4
+      register: result
       become: yes
       become_method: sudo
       lvg:
         vg: pilosavg
         pvs: "{{ nvme_disks.stdout }}"
     - name: create lvm out of nvme devices
-      when: nvme_disks.stdout|length > 4
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       lvol:
@@ -94,14 +96,14 @@
         size: +100%FREE
         pvs: "{{ nvme_disks.stdout }}"
     - name: create filesystem
-      when: nvme_disks.stdout|length > 4
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       filesystem:
         dev: /dev/pilosavg/pilosalv
         fstype: xfs
     - name: mount filesystem
-      when: nvme_disks.stdout|length > 4
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       mount:
