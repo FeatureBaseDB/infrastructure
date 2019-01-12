@@ -37,10 +37,22 @@ parse-go-bench:
 #csv format: cloud-provider,instance-shape,cluster-size,benchmark-name/query,mean,min,max,num
 FORMAT_GO_BENCH=jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .name, .mean, null, null, .iterations] | @csv'
 
-format-go-bench:
+format-go-bench: check-vars
 	cat gobenchpilosa.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchpilosa.out.csv
 	cat gobenchroaring.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchroaring.out.csv
 	cat gobenchinmem.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchinmem.out.csv
 
-format-benchruns:
+format-benchruns: check-vars
 	cat benchrun.jsons | jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .configuration.query, .stats.mean, .stats.min, .stats.max, .configuration.iterations] | @csv' | tee benchruns.csv
+
+check-vars:
+	$(call check_defined, CLOUD, Cloud provider, e.g. AWS, OCI, or Azure)
+	$(call check_defined, SHAPE, Instance shape/type)
+	$(call check_defined, COUNT, Number of Pilosa nodes)
+
+check_defined = \
+    $(strip $(foreach 1,$1, \
+        $(call __check_defined,$1,$(strip $(value 2)))))
+__check_defined = \
+    $(if $(value $1),, \
+      $(error Undefined $1$(if $2, ($2))))
