@@ -1,11 +1,17 @@
 taxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
 
+halftaxi:
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/halfURLs.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> halftaxi.out &'
+
 fakeusers:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
 
 taxi-log:
 	$(MAKE) ssh-agent CMD='tail taxi.out'
+
+halftaxi-log:
+	$(MAKE) ssh-agent CMD='tail halftaxi.out'
 
 TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
@@ -56,3 +62,7 @@ check_defined = \
 __check_defined = \
     $(if $(value $1),, \
       $(error Undefined $1$(if $2, ($2))))
+
+halfurls:
+	scp $(TAXI_MAKE_DIR)/halfurls.sh ubuntu@$(AGENT_PUBLIC_IP):
+	$(MAKE) ssh-agent CMD='chmod +x ./halfurls.sh && ./halfurls.sh'
