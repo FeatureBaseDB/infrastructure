@@ -66,16 +66,60 @@
   remote_user: ubuntu
   gather_facts: no
   tasks:
-    - name: get instance_metadata
-      shell: curl -ss -L http://169.254.169.254/opc/v1/instance/metadata/
-      register: instance_metadata
     - name: get private_ip
-      shell: hostname -I | cut -d" " -f1
+      shell: hostname -I | cut -d " " -f1
       register: private_ip
     - name: set facts
       set_fact:
-        instance_metadata: "{{ instance_metadata.stdout | from_json }}"
         private_ip: "{{ private_ip.stdout }}"
+    - name: get nvme devices
+      become: yes
+      become_method: sudo
+      shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
+      register: nvme_disks
+    - name: create volume group
+      ignore_errors: True
+      when: nvme_disks.stdout|length > 4
+      register: result
+      become: yes
+      become_method: sudo
+      lvg:
+        vg: pilosavg
+        pvs: "{{ nvme_disks.stdout }}"
+    - name: create lvm out of nvme devices
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      become: yes
+      become_method: sudo
+      lvol:
+        vg: pilosavg
+        lv: pilosalv
+        size: +100%FREE
+        pvs: "{{ nvme_disks.stdout }}"
+    - name: create filesystem
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      become: yes
+      become_method: sudo
+      filesystem:
+        dev: /dev/pilosavg/pilosalv
+        fstype: xfs
+    - name: mount filesystem
+      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      become: yes
+      become_method: sudo
+      mount:
+        fstype: xfs
+        path: /home/ubuntu/.pilosa
+        state: mounted
+        src: /dev/pilosavg/pilosalv
+    - name: chown data dir
+      become: yes
+      become_method: sudo
+      file:
+        group: ubuntu
+        owner: ubuntu
+        path: /home/ubuntu/.pilosa
+        recurse: yes
+        state: directory
     - name: pull pilosa
       git:
         dest: /home/ubuntu/go/src/github.com/pilosa/pilosa

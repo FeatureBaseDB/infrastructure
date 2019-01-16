@@ -19,6 +19,8 @@
           - unzip
           - python3-pip
           - gcc
+          - libssl-dev
+          - libffi-dev
     - name: open firewall port 80
       become: yes
       become_method: sudo

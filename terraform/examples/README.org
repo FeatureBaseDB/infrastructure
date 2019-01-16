@@ -1,0 +1,45 @@
+* Taxi Cab cross provider benchmarks
+Goal: run a standardized set of queries over the billion taxi ride dataset on same sized clusters of VMs. 
+Compute optimized.
+
+Cost is for linux on-demand.
+
+| Cloud   | Type            | n | Memory | $/hr/node |   $/hr | hyperthreads | SSD Storage | CPU type                                   |
+|---------+-----------------+---+--------+-----------+--------+--------------+-------------+--------------------------------------------|
+| OCI     | VM.Standard2.16 | 3 |    240 |    1.0208 | 3.0624 |           32 | 0           | 2.0 GHz Intel® Xeon® Platinum 8167M        |
+| OCI     | VM.DenseIO2.16  | 3 |    240 |      2.04 |   6.12 |           32 | 12.8TB NVME | 2.0 GHz Platinum 8167M                     |
+| OCI     | BM.Standard2.52 | 1 |    768 |    3.3176 | 3.3176 |           32 | 12.8TB NVME | 2.0 GHz Platinum 8167M                     |
+| Azure   | F32s v2         | 3 |     64 |     1.353 |  4.059 |           32 | 256 GB      | Skylake 3.4-3.7Ghz Xeon® Platinum 8168     |
+| Azure   | F16             | 6 |     32 |     0.796 |  4.776 |      16 core | 256 GB      | 2.4 GHz Intel Xeon® E5-2673 v3 (Haswell)   |
+| AWS     | c3.8xlarge      | 3 |     60 |      1.68 |   5.04 |           32 | 2*320GB     | Intel Xeon E5-2680 v2 (Ivy Bridge) 2.8 GHz |
+| AWS     | c4.8xlarge      | 3 |     60 |     1.591 |  4.773 |           36 | 0           | Intel Xeon E5-2666 v3 (Haswell) 2.9 GHz    |
+| AWS     | c5.9xlarge      | 3 |     72 |      1.53 |   4.59 |           36 | 0           | Intel Xeon Platinum 8124M 3.0 Ghz          |
+| GCP     | TODO            |   |        |           |        |              |             |                                            |
+| Joyent  | TODO            |   |        |           |        |              |             |                                            |
+| Others? | TODO            |   |        |           |        |              |             |                                            |
+
+
+** methodology
+1. Clone github.com/pilosa/infrastructure and change into it.
+2. =cd terraform/examples=
+3. Copy a *-taxi-template directory to a descriptively named dir e.g. =cp -r oci-taxi-template oci-taxi-DenseIO2.16-3node=
+4. Change into that new directory. e.g. =cd oci-taxi-DenseIO2.16-3node=
+5. Copy vars.tfvars.example to vars.tfvars and change stuff. Some of the clouds
+   require certain things (e.g. resource groups, network subnets, etc.) to be
+   created beforehand.
+6. Create a new workspace: e.g. =terraform workspace new taxi-DenseIO16-3node=
+7. =make apply=
+8. =make provision=
+9. =make halfurls=
+10. =make halftaxi=
+10. Wait for taxi load to complete - use =make halftaxi-log= to check status.
+11. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
+12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the
+    demo (nice for generating big queries). Note the comma after agent_ip
+13. =make bench= This will run the benchmarks and collect the results in this directory.
+14. Once you've done that with all configurations you care to benchmark, you can
+    run =make taxi-all-results= in the =examples= dir to collect all the results
+    into one CSV file.
+
+
+
