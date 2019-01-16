@@ -18,7 +18,7 @@ local
 
 Utilities for running Pilosa locally
 
-cloudformation
+deprecated
 -----
 
-Deprecated tooling for deploying Pilosa et al. with Cloudformation. Unmaintained.
+Contains deprecated tooling for deploying Pilosa et al. using cloudformation and/or terraform.
