@@ -22,16 +22,24 @@ Cost is for linux on-demand.
 ** methodology
 1. Clone github.com/pilosa/infrastructure and change into it.
 2. =cd terraform/examples=
-3. copy oci-taxi-template to a descriptively named dir e.g. oci-taxi-DenseIO2.16-3node
-4. edit the Makefile and add SHAPE and COUNT variables with the instance type/shape and the number of instances
-5. copy vars.tfvars.example to vars.tfvars and change stuff
-6. create a new workspace: e.g. =terraform workspace new taxi-DenseIO16-3node=
+3. Copy a *-taxi-template directory to a descriptively named dir e.g. =cp -r oci-taxi-template oci-taxi-DenseIO2.16-3node=
+4. Change into that new directory. e.g. =cd oci-taxi-DenseIO2.16-3node=
+5. Copy vars.tfvars.example to vars.tfvars and change stuff. Some of the clouds
+   require certain things (e.g. resource groups, network subnets, etc.) to be
+   created beforehand.
+6. Create a new workspace: e.g. =terraform workspace new taxi-DenseIO16-3node=
 7. =make apply=
 8. =make provision=
-9. =make taxi=
-10. Wait for taxi load to complete - use =make taxi-log= to check status.
+9. =make halfurls=
+10. =make halftaxi=
+10. Wait for taxi load to complete - use =make halftaxi-log= to check status.
 11. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
-12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the demo (nice for generating big queries). Note the comma after agent_ip
-13. =make bench= This will copy a bunch of benchmark data to the local dir.
+12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the
+    demo (nice for generating big queries). Note the comma after agent_ip
+13. =make bench= This will run the benchmarks and collect the results in this directory.
+14. Once you've done that with all configurations you care to benchmark, you can
+    run =make taxi-all-results= in the =examples= dir to collect all the results
+    into one CSV file.
+
 
 
