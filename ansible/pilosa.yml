@@ -75,7 +75,7 @@
     - name: get nvme devices
       become: yes
       become_method: sudo
-      shell: fdisk -l | grep 'Disk /dev/nvme' | cut -d' ' -f2 | sed s/:// | xargs | sed 's/ /,/g'
+      shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: create volume group
       ignore_errors: True
