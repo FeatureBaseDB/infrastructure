@@ -18,7 +18,7 @@ TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 bench:
 	scp $(TAXI_MAKE_DIR)/benchmark.sh ubuntu@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > benchrun.jsons'
-	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m' | tee ./gobenchpilosa.out
+	$(MAKE) ssh CMD='source /etc/profile && mkdir /home/ubuntu/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m -temp-dir=/home/ubuntu/.pilosa/.bench' | tee ./gobenchpilosa.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
 	scp ubuntu@$(AGENT_PUBLIC_IP):benchrun.jsons .
