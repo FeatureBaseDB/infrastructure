@@ -1,3 +1,20 @@
+TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
+
+include ../../include/Makefile-pilosa
+
+AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
+PROVISION = provision-pilosa-agent
+
+provision-pilosa-agent:
+	$(MAKE) provision-pilosa
+	$(MAKE) provision-agent provision-pdk HOSTS=$(AGENT_PUBLIC_IP),
+
+ssh-agent:
+	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP)
+
+run-agent:
+	$(MAKE) run HOSTS=$(AGENT_PUBLIC_IP),
+
 taxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
 
@@ -13,15 +30,14 @@ taxi-log:
 halftaxi-log:
 	$(MAKE) ssh-agent CMD='tail halftaxi.out'
 
-TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 bench:
-	scp $(TAXI_MAKE_DIR)/benchmark.sh ubuntu@$(AGENT_PUBLIC_IP):
+	scp $(TAXI_MAKE_DIR)/benchmark.sh $(USERNAME)@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > benchrun.jsons'
-	$(MAKE) ssh CMD='source /etc/profile && mkdir /home/ubuntu/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m -temp-dir=/home/ubuntu/.pilosa/.bench' | tee ./gobenchpilosa.out
+	$(MAKE) ssh CMD='source /etc/profile && mkdir -p /home/$(USERNAME)/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m -temp-dir=/home/$(USERNAME)/.pilosa/.bench' | tee ./gobenchpilosa.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
-	scp ubuntu@$(AGENT_PUBLIC_IP):benchrun.jsons .
+	scp $(USERNAME)@$(AGENT_PUBLIC_IP):benchrun.jsons .
 	$(MAKE) parse-go-bench
 	$(MAKE) format-go-bench
 	$(MAKE) format-benchruns
@@ -64,5 +80,5 @@ __check_defined = \
       $(error Undefined $1$(if $2, ($2))))
 
 halfurls:
-	scp $(TAXI_MAKE_DIR)/halfurls.sh ubuntu@$(AGENT_PUBLIC_IP):
+	scp $(TAXI_MAKE_DIR)/halfurls.sh $(USERNAME)@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./halfurls.sh && ./halfurls.sh'

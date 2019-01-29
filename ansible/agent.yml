@@ -1,12 +1,13 @@
 ---
 - name: basics
   hosts: all
-  remote_user: ubuntu
-  gather_facts: no
+  remote_user: "{{ username }}"
+  gather_facts: yes
   tasks:
-    - name: install software
+    - name: install software apt
       become: yes
       become_method: sudo
+      when: ansible_distribution == "Ubuntu"
       apt:
         name: "{{ packages }}"
         update_cache: yes
@@ -17,10 +18,26 @@
           - htop
           - jq
           - unzip
-          - python3-pip
           - gcc
           - libssl-dev
           - libffi-dev
+    - name: install software yum
+      become: yes
+      become_method: sudo
+      when: ansible_distribution == "OracleLinux"
+      yum:
+        name: "{{ packages }}"
+        update_cache: yes
+      vars:
+        packages:
+          - make
+          - git
+          - htop
+          - jq
+          - unzip
+          - gcc
+          - openssl-devel
+          - libffi-devel
     - name: open firewall port 80
       become: yes
       become_method: sudo
@@ -39,15 +56,6 @@
         destination_port: 8000
         jump: ACCEPT
         action: insert
-    - name: install python tools
-      become: yes
-      become_method: sudo
-      pip:
-        name: "{{ packages }}"
-      vars:
-        packages:
-          - oci-cli
-          - ansible
     - name: set up pilosa hosts environment variable
       become: yes
       become_method: sudo
@@ -59,7 +67,7 @@
         pilosa_hosts: "localhost:10101"
 - name: install terraform
   hosts: all
-  remote_user: ubuntu
+  remote_user: "{{ username }}"
   gather_facts: no
   tasks:
     - name: install terraform binary

@@ -8,6 +8,7 @@ TF_ARGS_FINAL=-var-file=vars.tfvars $(TF_ARGS)
 TF_WORKSPACE=$(shell terraform workspace show)
 
 export ANSIBLE_HOST_KEY_CHECKING=false
+USERNAME=ubuntu
 ANSIBLE_ARGS=
 ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
 ANSIBLE_DIR=../../../ansible
@@ -42,12 +43,11 @@ output: require-terraform
 ssh: require-terraform require-jq
 	ssh -o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
-		-l ubuntu \
+		-l $(USERNAME) \
 		$(PUBLIC_IP) "$(CMD)"
 
 provision-%: require-jq require-terraform require-ansible
 	ansible-playbook \
-		-e 'ansible_python_interpreter=/usr/bin/python3' \
 		$(ANSIBLE_ARGS_FINAL) $(ANSIBLE_DIR)/$*.yml
 
 inventory.json:
@@ -60,7 +60,6 @@ run:
 	ansible \
 		all \
 		-i $(HOSTS) \
-		-e 'ansible_python_interpreter=/usr/bin/python3' \
-		-u ubuntu \
+		-u $(USERNAME) \
 		-m shell \
 		-a "$(CMD)"
