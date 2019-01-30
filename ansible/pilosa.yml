@@ -1,4 +1,16 @@
 ---
+- name: prereqs
+  hosts: all
+  strategy: free
+  remote_user: "{{ username }}"
+  gather_facts: no
+  tasks:
+    - name: try to install python
+      become: yes
+      become_method: sudo
+      raw: "apt -y install python"
+      ignore_errors: True
+
 - name: basics
   hosts: all
   strategy: free
@@ -92,15 +104,18 @@
       set_fact:
         private_ip: "{{ private_ip.stdout }}"
     - name: get nvme devices
-      when: ansible_distribution != "OracleLinux"
+      when: ansible_distribution != "OracleLinux" and cloud != "GCP"
       become: yes
       become_method: sudo
       shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: get nvme devices
-      when: ansible_distribution == "OracleLinux"
+      when: ansible_distribution == "OracleLinux" or cloud == "GCP"
       shell: lsblk -r | awk '/nvme/ {print "/dev/"$1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
+    - name: print nvme stuff
+      debug:
+        var: nvme_disks
     - name: dlkjfe
       debug:
         msg: "{{ nvme_disks.stdout }}"

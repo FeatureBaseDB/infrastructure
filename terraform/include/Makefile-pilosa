@@ -12,7 +12,7 @@ PILOSA_PUBLIC_IPS=$(shell terraform output -json | jq -r ".pilosa_public_ips.val
 PILOSA_HOSTS=$(shell terraform output -json | jq -r 'reduce .pilosa_private_ips.value[] as $$item (""; . + $$item + ":10101,") | .[:-1]')
 PUBLIC_IP=$(PILOSA_PUBLIC_IP)
 HOSTS=$(PILOSA_PUBLIC_IPS),
-ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)'  -e pilosa_hosts=$(PILOSA_HOSTS) -e username='$(USERNAME)' $(ANSIBLE_ARGS)
+ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)'  -e pilosa_hosts=$(PILOSA_HOSTS) -e username='$(USERNAME)' -e cloud='$(CLOUD)' $(ANSIBLE_ARGS)
 
 status: require-terraform
 	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
