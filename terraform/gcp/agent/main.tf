@@ -14,7 +14,7 @@ resource "google_compute_instance" "agent" {
   }
 
   network_interface {
-    network = "default"
+    network = "${var.network_name}"
 
     access_config {
       // Ephemeral IP
