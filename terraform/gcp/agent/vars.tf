@@ -7,6 +7,10 @@ variable "credentials_file" {
     default = "credentials.json"
 }
 
+variable "network_name" {
+    default = "default"
+}
+
 variable "machine_type" {
     default = "n1-standard-1"
 }
