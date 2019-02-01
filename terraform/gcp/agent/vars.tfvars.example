@@ -1,0 +1,7 @@
+zone="us-central1-a"
+project="pilosa-sandbox"
+region="us-central1"
+network_name="default"
+machine_type="n1-standard-1"
+image="ubuntu-os-cloud/ubuntu-1804-lts"
+ssh_public_key="~/.ssh/id_rsa.pub"

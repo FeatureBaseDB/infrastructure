@@ -4,3 +4,5 @@ ans_variables.yml
 terraform.tfstate*
 *.tfvars
 *.retry
+credentials.json
+*.tfstate*

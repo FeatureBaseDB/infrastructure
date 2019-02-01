@@ -4,15 +4,15 @@ After=network.target
 
 [Service]
 Type=simple
-User=ubuntu
-Group=ubuntu
+User={{ username }}
+Group={{ username }}
 LimitNOFILE=1048576
 LimitNPROC=1048576
 
 Restart=on-failure
 RestartSec=5
 
-ExecStart=/home/ubuntu/go/bin/demo-taxi --pilosa={{ pilosa_location }}
+ExecStart=/home/{{ username}}/go/bin/demo-taxi --pilosa={{ pilosa_location }}
 
 # make sure log directory exists and owned by syslog
 PermissionsStartOnly=true

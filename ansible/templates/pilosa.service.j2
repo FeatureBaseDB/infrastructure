@@ -4,21 +4,20 @@ After=network.target
 
 [Service]
 Type=simple
-User=ubuntu
-Group=ubuntu
+User={{ username }}
+Group={{ username }}
 LimitNOFILE=1048576
 LimitNPROC=1048576
 
 Restart=on-failure
 RestartSec=5
 
-ExecStart=/home/ubuntu/go/bin/pilosa server {{ pilosa_arguments }}
+ExecStart=/home/{{ username }}/go/bin/pilosa server {{ pilosa_arguments }}
 
 # make sure log directory exists and owned by syslog
 PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p /var/log/pilosa
-ExecStartPre=/bin/chown -R syslog:adm /var/log/pilosa
-ExecStartPre=/bin/chmod 755 /var/log/pilosa
+ExecStartPre=/bin/chmod 766 /var/log/pilosa
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=pilosa

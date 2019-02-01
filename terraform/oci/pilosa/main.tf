@@ -12,6 +12,7 @@ resource "oci_core_instance" "PilosaInstance" {
   compartment_id      = "${var.compartment_ocid}"
   display_name        = "${var.prefix_name}-pilosa${count.index}"
   shape               = "${var.instance_shape}"
+  fault_domain        = "FAULT-DOMAIN-${count.index % 3 + 1}"
 
   create_vnic_details {
     subnet_id        = "${var.subnet_ocid}"
