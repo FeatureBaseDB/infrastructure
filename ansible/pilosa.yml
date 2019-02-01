@@ -121,9 +121,6 @@
     - name: print nvme stuff
       debug:
         var: nvme_disks
-    - name: dlkjfe
-      debug:
-        msg: "{{ nvme_disks.stdout }}"
     - name: create volume group
       ignore_errors: True
       when: nvme_disks.stdout|length > 4
@@ -238,12 +235,12 @@
   remote_user: "{{ username }}"
   gather_facts: yes
   tasks:
-    - name: get bandwidth
+    - name: get bandwidth (memory benchmarking tool)
       unarchive:
         src: https://zsmith.co/archives/bandwidth-1.5.1.tar.gz
         remote_src: yes
         dest: "/home/{{ username }}/"
-    - name: stropts hack for bandwith
+    - name: stropts hack for bandwidth (so it will compile)
       become: yes
       become_method: sudo
       file:
