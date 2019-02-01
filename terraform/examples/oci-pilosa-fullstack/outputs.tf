@@ -1,9 +1,9 @@
-output "private_ips" {
-  value = ["${module.pilosa.private_ips}"]
+output "pilosa_private_ips" {
+  value = ["${module.pilosa.pilosa_private_ips}"]
 }
 
-output "public_ips" {
-  value = ["${module.pilosa.public_ips}"]
+output "pilosa_public_ips" {
+  value = ["${module.pilosa.pilosa_public_ips}"]
 }
 
 output "subnet_ocid" {

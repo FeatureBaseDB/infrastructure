@@ -21,6 +21,9 @@
       become: yes
       become_method: sudo
       raw: "[ -f /usr/bin/python ] || ln -s /usr/bin/python3 /usr/bin/python"
+    - name: find distro
+      debug:
+        var: ansible_distribution
     - name: install software apt
       become: yes
       become_method: sudo
@@ -35,8 +38,9 @@
           - htop
           - jq
           - gcc
+          - nasm
     - name: install software yum
-      when: ansible_distribution == "OracleLinux"
+      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon"
       become: yes
       become_method: sudo
       yum:
@@ -49,6 +53,7 @@
           - htop
           - jq
           - gcc
+          - nasm
     - name: open firewall port 10101
       become: yes
       become_method: sudo
@@ -110,7 +115,7 @@
       shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: get nvme devices
-      when: ansible_distribution == "OracleLinux" or cloud == "GCP"
+      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or cloud == "GCP"
       shell: lsblk -r | awk '/nvme/ {print "/dev/"$1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: print nvme stuff
@@ -227,3 +232,24 @@
       systemd:
         name: rsyslog
         state: restarted
+- name: microbenchmarks
+  hosts: all
+  strategy: free
+  remote_user: "{{ username }}"
+  gather_facts: yes
+  tasks:
+    - name: get bandwidth
+      unarchive:
+        src: https://zsmith.co/archives/bandwidth-1.5.1.tar.gz
+        remote_src: yes
+        dest: "/home/{{ username }}/"
+    - name: stropts hack for bandwith
+      become: yes
+      become_method: sudo
+      file:
+        path: "/usr/include/stropts.h"
+        state: touch
+    - name: build bandwidth
+      make:
+        chdir: "/home/{{ username }}/bandwidth-1.5.1"
+        target: bandwidth64

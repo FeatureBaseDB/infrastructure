@@ -5,3 +5,4 @@ terraform.tfstate*
 *.tfvars
 *.retry
 credentials.json
+*.tfstate*

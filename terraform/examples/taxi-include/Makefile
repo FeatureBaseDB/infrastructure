@@ -57,7 +57,7 @@ parse-go-bench:
 	cat gobenchinmem.out | $(PARSE_GO_BENCH) | tee gobenchinmem.out.jsons
 
 #csv format: cloud-provider,instance-shape,cluster-size,benchmark-name/query,mean,min,max,num
-FORMAT_GO_BENCH=jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .name, .mean, null, null, .iterations] | @csv'
+FORMAT_GO_BENCH=jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .name, .mean, null, null, .iterations, "$(USERNAME)] | @csv'
 
 format-go-bench: check-vars
 	cat gobenchpilosa.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchpilosa.out.csv
@@ -82,3 +82,10 @@ __check_defined = \
 halfurls:
 	scp $(TAXI_MAKE_DIR)/halfurls.sh $(USERNAME)@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./halfurls.sh && ./halfurls.sh'
+
+bandwidth:
+	scp $(TAXI_MAKE_DIR)/bandwidth.sh $(USERNAME)@$(PILOSA_PUBLIC_IP):
+	$(MAKE) ssh CMD='chmod +x ./bandwidth.sh && exec nohup ./bandwidth.sh &> bandwidth.sh.out &'
+
+bw-log:
+	$(MAKE) ssh CMD='tail -f bandwidth.sh.out'
