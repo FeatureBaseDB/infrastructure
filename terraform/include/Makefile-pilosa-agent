@@ -1,0 +1,15 @@
+include $(dir $(lastword $(MAKEFILE_LIST)))/Makefile-pilosa
+
+PROVISION += provision-agent
+
+INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}, agent: {hosts:{"agent0":{ansible_host:.agent_public_ip.value, ansible_user: "$(USERNAME)"}}}}
+
+AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
+
+PROVISION += provision-agent
+
+ssh-agent:
+	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP)
+
+run-agent:
+	$(MAKE) run ANSIBLE_TARGET=agent

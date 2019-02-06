@@ -1,3 +1,1 @@
-include ../../include/Makefile
-
-PROVISION += provision-agent
+include ../../include/Makefile-agent

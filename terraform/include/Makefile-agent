@@ -1,0 +1,4 @@
+include $(dir $(lastword $(MAKEFILE_LIST)))/Makefile
+
+PROVISION += provision-agent provision-pdk
+INVENTORY_GENERATOR_JQ={agent: {hosts:{"agent0":{ansible_host:.public_ip.value, ansible_user: "$(USERNAME)"}}}}

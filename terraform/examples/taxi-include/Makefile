@@ -1,19 +1,6 @@
 TAXI_MAKE_DIR:=$(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
-include ../../include/Makefile-pilosa
-
-AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
-PROVISION = provision-pilosa-agent
-
-provision-pilosa-agent:
-	$(MAKE) provision-pilosa
-	$(MAKE) provision-agent provision-pdk HOSTS=$(AGENT_PUBLIC_IP),
-
-ssh-agent:
-	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP)
-
-run-agent:
-	$(MAKE) run HOSTS=$(AGENT_PUBLIC_IP),
+include ../../include/Makefile-pilosa-agent
 
 taxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
@@ -44,10 +31,10 @@ bench:
 	cat gobench*.csv benchruns.csv > results.csv
 
 nuke-pilosa:
-	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
+	$(MAKE) run ANSIBLE_TARGET=pilosa CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
 
 restart-pilosa:
-	$(MAKE) run CMD="sudo service pilosa restart"
+	$(MAKE) run ANSIBLE_TARGET=pilosa CMD="sudo service pilosa restart"
 
 PARSE_GO_BENCH=jq -R 'capture("(?<name>[^\\s]*)[\\s]+(?<iterations>\\d+)[\t ]+(?<mean>\\d+)[\\s]ns/op.*")'
 

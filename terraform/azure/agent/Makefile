@@ -1,3 +1,1 @@
-include ../../include/Makefile
-
-PROVISION += provision-pilosa
+include ../../include/Makefile-agent

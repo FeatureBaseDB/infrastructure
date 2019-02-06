@@ -6,3 +6,4 @@ terraform.tfstate*
 *.retry
 credentials.json
 *.tfstate*
+inventory.json

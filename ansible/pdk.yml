@@ -1,7 +1,6 @@
 ---
 - name: basics
-  hosts: all
-  remote_user: "{{ username }}"
+  hosts: agent
   gather_facts: yes
   tasks:
     - name: install software apt
@@ -32,7 +31,6 @@
           - jq
 - name: install go
   hosts: all
-  remote_user: "{{ username }}"
   become: yes
   become_method: sudo
   gather_facts: no
@@ -45,13 +43,12 @@
       go_version_target: "go version go1.11 linux/amd64"
       set_go_path: true
 - name: install pdk
-  hosts: all
-  remote_user: "{{ username }}"
+  hosts: agent
   gather_facts: no
   tasks:
     - name: pull pdk
       git:
-        dest: "/home/{{ username }}/go/src/github.com/pilosa/pdk"
+        dest: "/home/{{ ansible_user }}/go/src/github.com/pilosa/pdk"
         repo: "{{ pdk_repo }}"
         version: "{{ pdk_version }}"
       vars:
@@ -60,17 +57,16 @@
     - name: install pdk
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
-        chdir: "/home/{{ username }}/go/src/github.com/pilosa/pdk"
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/pdk"
 - name: install tools
-  hosts: all
-  remote_user: "{{ username }}"
+  hosts: agent
   gather_facts: no
   tasks:
     - name: pull tools
       git:
-        dest: "/home/{{ username }}/go/src/github.com/pilosa/tools"
+        dest: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
         repo: http://github.com/pilosa/tools.git
     - name: install tools
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
-        chdir: "/home/{{ username }}/go/src/github.com/pilosa/tools"
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"

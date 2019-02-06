@@ -1,4 +1,4 @@
-.PHONY: require-% init plan apply refresh plan-destroy destroy ssh provision provision-%
+.PHONY: require-% init plan apply refresh plan-destroy destroy ssh provision provision-% inventory.json
 
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
@@ -10,8 +10,9 @@ TF_WORKSPACE=$(shell terraform workspace show)
 export ANSIBLE_HOST_KEY_CHECKING=false
 USERNAME=ubuntu
 ANSIBLE_ARGS=
-ANSIBLE_ARGS_FINAL=-i $(HOSTS) $(ANSIBLE_ARGS)
 ANSIBLE_DIR=../../../ansible
+ANSIBLE_TARGET=all
+INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
 
 PREFIX_NAME=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
@@ -46,20 +47,20 @@ ssh: require-terraform require-jq
 		-l $(USERNAME) \
 		$(PUBLIC_IP) "$(CMD)"
 
-provision-%: require-jq require-terraform require-ansible
-	ansible-playbook \
-		$(ANSIBLE_ARGS_FINAL) $(ANSIBLE_DIR)/$*.yml
+provision-%: require-jq require-terraform require-ansible inventory.json
+	ansible-playbook -i inventory.json $(ANSIBLE_ARGS_FINAL) $(ANSIBLE_ARGS_EXTRA) $(ANSIBLE_DIR)/$*.yml
 
 inventory.json:
-	$(MAKE) output | jq '.pilosa_public_ips.value | map({(.): null}) | add | {pilosa: {hosts: .}}' > $@
+	$(MAKE) output | jq '$(INVENTORY_GENERATOR_JQ)' > $@
 
 provision:
 	$(MAKE) $(PROVISION)
 
+ANSIBLE_TARGET=all
+ANSIBLE_MODULE=ping
+
+ansible: require-jq require-terraform require-ansible inventory.json
+	ansible -i inventory.json $(ANSIBLE_TARGET) -m $(ANSIBLE_MODULE) $(ANSIBLE_ARGS_EXTRA)
+
 run:
-	ansible \
-		all \
-		-i $(HOSTS) \
-		-u $(USERNAME) \
-		-m shell \
-		-a "$(CMD)"
+	$(MAKE) ansible ANSIBLE_TARGET=$(ANSIBLE_TARGET) ANSIBLE_MODULE=shell ANSIBLE_ARGS_EXTRA='-a "$(CMD)"'
