@@ -26,3 +26,8 @@ variable "ssh_public_key" {
 variable "prefix_name" {
   default = "default"
 }
+
+variable "min_cpu_platform" {
+  default = ""
+}
+

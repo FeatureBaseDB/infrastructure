@@ -11,6 +11,7 @@ module "pilosa" {
   prefix_name = "${var.prefix_name}"
   pilosa_cluster_size = "${var.pilosa_cluster_size}"
   ssh_public_key = "${var.ssh_public_key}"
+  min_cpu_platform = "${var.min_cpu_platform}"
 }
 
 module "agent" {
@@ -25,4 +26,5 @@ module "agent" {
   image = "${var.agent_image}"
   prefix_name = "${var.prefix_name}"
   ssh_public_key = "${var.ssh_public_key}"
+  min_cpu_platform = "${var.min_cpu_platform}"
 }

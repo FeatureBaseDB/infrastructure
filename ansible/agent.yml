@@ -1,4 +1,16 @@
 ---
+- name: prereqs
+  hosts: all
+  strategy: free
+  remote_user: "{{ username }}"
+  gather_facts: no
+  tasks:
+    - name: try to install python
+      become: yes
+      become_method: sudo
+      raw: "apt -y install python"
+      ignore_errors: True
+
 - name: basics
   hosts: all
   remote_user: "{{ username }}"

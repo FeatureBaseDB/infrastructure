@@ -29,3 +29,7 @@ variable "prefix_name" {
 variable "pilosa_cluster_size" {
     default = 3
 }
+
+variable "min_cpu_platform" {
+  default = ""
+}
