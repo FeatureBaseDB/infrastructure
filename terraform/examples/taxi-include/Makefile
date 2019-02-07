@@ -47,9 +47,6 @@ bench:
 	gsed -i 's/\(Benchmark.*\)-[0-9]\+",/\1",/g' ${RESULT_FILE}
 	@echo ${RESULT_FILE} > .latest_run_name
 
-lastrun:
-	@echo ${RESULT_FILE} > .latest_run_name
-
 PARSE_GO_BENCH=jq -R 'capture("(?<name>[^\\s]*)[\\s]+(?<iterations>\\d+)[\t ]+(?<mean>\\d+)[\\s]ns/op.*")'
 
 parse-go-bench:
