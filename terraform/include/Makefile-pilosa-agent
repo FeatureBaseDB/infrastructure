@@ -6,8 +6,6 @@ INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | m
 
 AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
 
-PROVISION += provision-agent
-
 ssh-agent:
 	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP)
 

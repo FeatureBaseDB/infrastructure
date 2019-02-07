@@ -1,1 +1,2 @@
 - src: git+https://github.com/mrlesmithjr/ansible-mdadm.git
+- src: git+https://github.com/jlund/ansible-go.git

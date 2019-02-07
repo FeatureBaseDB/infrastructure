@@ -1,4 +1,4 @@
-.PHONY: require-% init plan apply refresh plan-destroy destroy ssh provision provision-% inventory.json
+.PHONY: require-% init plan apply refresh plan-destroy destroy ssh provision provision-% inventory.json ansible-roles
 
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
@@ -50,17 +50,20 @@ ssh: require-terraform require-jq
 provision-%: require-jq require-terraform require-ansible inventory.json
 	ansible-playbook -i inventory.json $(ANSIBLE_ARGS_FINAL) $(ANSIBLE_ARGS_EXTRA) $(ANSIBLE_DIR)/$*.yml
 
-inventory.json:
+inventory.json: require-terraform require-jq
 	$(MAKE) output | jq '$(INVENTORY_GENERATOR_JQ)' > $@
 
 provision:
-	$(MAKE) $(PROVISION)
+	$(MAKE) ansible-roles $(PROVISION)
 
 ANSIBLE_TARGET=all
 ANSIBLE_MODULE=ping
 
-ansible: require-jq require-terraform require-ansible inventory.json
+ansible: require-ansible inventory.json
 	ansible -i inventory.json $(ANSIBLE_TARGET) -m $(ANSIBLE_MODULE) $(ANSIBLE_ARGS_EXTRA)
+
+ansible-roles:
+	ansible-galaxy install -r ../../../ansible/requirements.yaml
 
 run:
 	$(MAKE) ansible ANSIBLE_TARGET=$(ANSIBLE_TARGET) ANSIBLE_MODULE=shell ANSIBLE_ARGS_EXTRA='-a "$(CMD)"'
