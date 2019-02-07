@@ -37,9 +37,13 @@ Cost is for linux on-demand.
 12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the
     demo (nice for generating big queries). Note the comma after agent_ip
 13. =make bench= This will run the benchmarks and collect the results in this directory.
-14. Once you've done that with all configurations you care to benchmark, you can
-    run =make taxi-all-results= in the =examples= dir to collect all the results
-    into one CSV file.
+14. Your results are now in a file named like =rawresults-$(CLOUD)-$(SHAPE)-$(COUNT)-$(USERNAME)-$(shell date -u +%Y%M%dT%H%M).csv=
+15. You can upload the results directly to a data.world project - you'll have to
+    edit the =upload= target in the taxi-include Makefile if you want to use a
+    data.world project other than the default:
+    - Download your API token from https://data.world/settings/advanced
+    - Place it in a file in this directory called =data.world-api-token=. 
+    - Run =make upload= from each particular configuration's directory.
 
 
 

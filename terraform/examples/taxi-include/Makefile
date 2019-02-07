@@ -5,22 +5,35 @@ include ../../include/Makefile-pilosa-agent
 taxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
 
-halftaxi:
-	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/halfURLs.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> halftaxi.out &'
-
-fakeusers:
-	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
-
 taxi-log:
 	$(MAKE) ssh-agent CMD='tail taxi.out'
+
+taxi-weather:
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk weather -f go/src/github.com/pilosa/pdk/usecase/weather/urls.txt -p `echo $$(PILOSA_HOSTS) | cut -d, -f1` &> taxi-weather.out &'
+
+taxi-weather-log:
+	$(MAKE) ssh-agent CMD='tail -f taxi-weather.out'
+
+halftaxi:
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/halfURLs.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> halftaxi.out &'
 
 halftaxi-log:
 	$(MAKE) ssh-agent CMD='tail halftaxi.out'
 
+fakeusers:
+	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
+
+nuke-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
+
+restart-pilosa:
+	$(MAKE) run CMD="sudo service pilosa restart"
+
+RESULT_FILE=rawresults-$(CLOUD)-$(SHAPE)-$(COUNT)-$(USERNAME)-$(shell date +%Y%m%dT%H%M).csv
 
 bench:
 	scp $(TAXI_MAKE_DIR)/benchmark.sh $(USERNAME)@$(AGENT_PUBLIC_IP):
-	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > benchrun.jsons'
+	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > /dev/null && ./benchmark.sh > benchrun.jsons'
 	$(MAKE) ssh CMD='source /etc/profile && mkdir -p /home/$(USERNAME)/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m -temp-dir=/home/$(USERNAME)/.pilosa/.bench' | tee ./gobenchpilosa.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
@@ -28,13 +41,14 @@ bench:
 	$(MAKE) parse-go-bench
 	$(MAKE) format-go-bench
 	$(MAKE) format-benchruns
-	cat gobench*.csv benchruns.csv > results.csv
+	echo '"Cloud","Instance Type/Shape","Cluster size","Benchmark","Mean","Min","Max","Iterations","Username"' > ${RESULT_FILE}
+	cat gobench*.csv benchruns.csv >> ${RESULT_FILE}
+	# Normalize Go benchmark names to remove the "-GOMAXPROCS"
+	gsed -i 's/\(Benchmark.*\)-[0-9]\+",/\1",/g' ${RESULT_FILE}
+	@echo ${RESULT_FILE} > .latest_run_name
 
-nuke-pilosa:
-	$(MAKE) run ANSIBLE_TARGET=pilosa CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
-
-restart-pilosa:
-	$(MAKE) run ANSIBLE_TARGET=pilosa CMD="sudo service pilosa restart"
+lastrun:
+	@echo ${RESULT_FILE} > .latest_run_name
 
 PARSE_GO_BENCH=jq -R 'capture("(?<name>[^\\s]*)[\\s]+(?<iterations>\\d+)[\t ]+(?<mean>\\d+)[\\s]ns/op.*")'
 
@@ -44,7 +58,7 @@ parse-go-bench:
 	cat gobenchinmem.out | $(PARSE_GO_BENCH) | tee gobenchinmem.out.jsons
 
 #csv format: cloud-provider,instance-shape,cluster-size,benchmark-name/query,mean,min,max,num
-FORMAT_GO_BENCH=jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .name, .mean, null, null, .iterations, "$(USERNAME)] | @csv'
+FORMAT_GO_BENCH=jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .name, .mean, null, null, .iterations, "$(USERNAME)"] | @csv'
 
 format-go-bench: check-vars
 	cat gobenchpilosa.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchpilosa.out.csv
@@ -52,7 +66,18 @@ format-go-bench: check-vars
 	cat gobenchinmem.out.jsons | $(FORMAT_GO_BENCH) | tee gobenchinmem.out.csv
 
 format-benchruns: check-vars
-	cat benchrun.jsons | jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .configuration.query, .stats.mean, .stats.min, .stats.max, .configuration.iterations] | @csv' | tee benchruns.csv
+	cat benchrun.jsons | jq -r '["$(CLOUD)", "$(SHAPE)", "$(COUNT)", .configuration.query, .stats.mean, .stats.min, .stats.max, .configuration.iterations, "$(USERNAME)"] | @csv' | tee benchruns.csv
+
+TOKEN=$(shell cat ../data.world-api-token)
+
+
+LAST_RUN=$(shell cat .latest_run_name)
+upload:
+	curl \
+	  -H "Authorization: Bearer ${TOKEN}" \
+	  -X PUT -H "Content-Type: application/octet-stream" \
+	  --data-binary @${LAST_RUN} \
+	  https://api.data.world/v0/uploads/jaffee/benchmarks/files/${LAST_RUN}
 
 check-vars:
 	$(call check_defined, CLOUD, Cloud provider, e.g. AWS, OCI, or Azure)
