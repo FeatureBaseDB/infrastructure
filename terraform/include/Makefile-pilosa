@@ -18,4 +18,16 @@ INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | m
 status: require-terraform
 	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
 
+nuke-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ~/.pilosa/*; sudo service pilosa start" ANSIBLE_TARGET=pilosa
+
+restart-pilosa:
+	$(MAKE) run CMD="sudo service pilosa restart" ANSIBLE_TARGET=pilosa
+
+start-pilosa:
+	$(MAKE) run CMD="sudo service pilosa start" ANSIBLE_TARGET=pilosa
+
+stop-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop" ANSIBLE_TARGET=pilosa
+
 PROVISION += provision-pilosa

@@ -66,4 +66,7 @@ ansible-roles:
 	ansible-galaxy install -r ../../../ansible/requirements.yaml
 
 run:
-	$(MAKE) ansible ANSIBLE_TARGET=$(ANSIBLE_TARGET) ANSIBLE_MODULE=shell ANSIBLE_ARGS_EXTRA='-a "$(CMD)"'
+	$(MAKE) ansible ANSIBLE_MODULE=shell ANSIBLE_ARGS_EXTRA='-a "$(CMD)"'
+
+ping:
+	$(MAKE) ansible ANSIBLE_MODULE=ping

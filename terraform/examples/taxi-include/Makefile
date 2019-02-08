@@ -23,12 +23,6 @@ halftaxi-log:
 fakeusers:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
 
-nuke-pilosa:
-	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ./.pilosa/*; sudo service pilosa start"
-
-restart-pilosa:
-	$(MAKE) run CMD="sudo service pilosa restart"
-
 RESULT_FILE=rawresults-$(CLOUD)-$(SHAPE)-$(COUNT)-$(USERNAME)-$(shell date +%Y%m%dT%H%M).csv
 
 bench:
