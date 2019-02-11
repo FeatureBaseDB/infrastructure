@@ -25,7 +25,6 @@ runbw () {
 }
 
 > ../allbw.out # truncate
-export TRIALS="1 16 36 52"
 for trial in ${TRIALS}
 do
     echo Starting Trial: ${trial}
@@ -38,5 +37,6 @@ do
     do
         echo -n BW${line} conc${trial}'!'
         grep "$line" bandwidth${trial}-*.out | awk -F'!' '{ sum+=$2 } END {printf "%.0f", sum}'
+        echo ""
     done >> ../allbw.out
 done
