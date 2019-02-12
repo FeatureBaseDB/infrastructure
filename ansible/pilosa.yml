@@ -92,14 +92,18 @@
       set_fact:
         private_ip: "{{ private_ip.stdout }}"
     - name: get nvme devices
-      when: ansible_distribution != "OracleLinux" and cloud != "GCP"
+      when: ansible_distribution == "Ubuntu" and cloud != "GCP"
       become: yes
       become_method: sudo
       shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: get nvme devices
-      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or cloud == "GCP"
+      when: ansible_distribution == "OracleLinux" or cloud == "GCP"
       shell: lsblk -r | awk '/nvme/ {print "/dev/"$1}' | xargs | sed 's/ /,/g'
+      register: nvme_disks
+    - name: get nvme devices
+      when: ansible_distribution == "Amazon"
+      shell: lsblk -O -r | awk '/Instance.*Storage/ {print "/dev/"$1}' | xargs | sed 's/ /,/'
       register: nvme_disks
     - name: print nvme stuff
       debug:

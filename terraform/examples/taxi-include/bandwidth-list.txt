@@ -1,0 +1,74 @@
+Sequential read (64-bit), size = 128 B
+Sequential read (64-bit), size = 1 MB
+Sequential read (64-bit), size = 512 MB
+Random read (64-bit), size = 256 B
+Random read (64-bit), size = 1 MB
+Random read (64-bit), size = 512 MB
+Sequential write (64-bit), size = 128 B
+Sequential write (64-bit), size = 1 MB
+Sequential write (64-bit), size = 512 MB
+Random write (64-bit), size = 256 B
+Random write (64-bit), size = 1 MB
+Random write (64-bit), size = 512 MB
+Sequential read (128-bit), size = 128 B
+Sequential read (128-bit), size = 1 MB
+Sequential read (128-bit), size = 512 MB
+Sequential read (256-bit), size = 256 B
+Sequential read (256-bit), size = 1 MB
+Sequential read (256-bit), size = 512 MB
+Random read (256-bit), size = 256 B
+Random read (256-bit), size = 1 MB
+Random read (256-bit), size = 512 MB
+Random read (128-bit), size = 256 B
+Random read (128-bit), size = 1 MB
+Random read (128-bit), size = 512 MB
+Sequential write (128-bit), size = 128 B
+Sequential write (128-bit), size = 1 MB
+Sequential write (128-bit), size = 512 MB
+Sequential write (256-bit), size = 256 B
+Sequential write (256-bit), size = 1 MB
+Sequential write (256-bit), size = 512 MB
+Random write (256-bit), size = 256 B
+Random write (256-bit), size = 1 MB
+Random write (256-bit), size = 512 MB
+Random write (128-bit), size = 256 B
+Random write (128-bit), size = 1 MB
+Random write (128-bit), size = 512 MB
+Sequential read bypassing cache (128-bit), size = 128 B
+Sequential read bypassing cache (128-bit), size = 1 MB
+Sequential read bypassing cache (128-bit), size = 512 MB
+Random read bypassing cache (128-bit), size = 256 B
+Random read bypassing cache (128-bit), size = 1 MB
+Random read bypassing cache (128-bit), size = 512 MB
+Sequential write bypassing cache (128-bit), size = 128 B
+Sequential write bypassing cache (128-bit), size = 1 MB
+Sequential write bypassing cache (128-bit), size = 512 MB
+Sequential write bypassing cache (256-bit), size = 256 B
+Sequential write bypassing cache (256-bit), size = 1 MB
+Sequential write bypassing cache (256-bit), size = 512 MB
+Random write bypassing cache (128-bit), size = 256 B
+Random write bypassing cache (128-bit), size = 1 MB
+Random write bypassing cache (128-bit), size = 512 MB
+Sequential copy (128-bit), size = 128 B
+Sequential copy (128-bit), size = 1 MB
+Sequential copy (128-bit), size = 512 MB
+Sequential copy (256-bit), size = 256 B
+Sequential copy (256-bit), size = 1 MB
+Sequential copy (256-bit), size = 512 MB
+Main register to main register transfers (64-bit)
+Main register to vector register transfers (64-bit)
+Vector register to main register transfers (64-bit)
+Vector register to vector register transfers (128-bit)
+Vector register to vector register transfers (256-bit)
+Vector 8-bit datum to main register transfers
+Vector 16-bit datum to main register transfers
+Vector 32-bit datum to main register transfers
+Vector 64-bit datum to main register transfers
+Main register 8-bit datum to vector register transfers
+Main register 16-bit datum to vector register transfers
+Main register 32-bit datum to vector register transfers
+Main register 64-bit datum to vector register transfers
+Stack-to-register transfers (64-bit)
+Register-to-stack transfers (64-bit)
+Library: memset
+Library: memcpy

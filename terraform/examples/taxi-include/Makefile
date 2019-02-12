@@ -6,7 +6,7 @@ taxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/greenAndYellowUrls.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> taxi.out &'
 
 taxi-log:
-	$(MAKE) ssh-agent CMD='tail taxi.out'
+	$(MAKE) ssh-agent CMD='tail -f taxi.out'
 
 taxi-weather:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk weather -f go/src/github.com/pilosa/pdk/usecase/weather/urls.txt -p `echo $$(PILOSA_HOSTS) | cut -d, -f1` &> taxi-weather.out &'
@@ -18,7 +18,7 @@ halftaxi:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk taxi -f go/src/github.com/pilosa/pdk/usecase/taxi/halfURLs.txt --pilosa=`echo $$(PILOSA_HOSTS) | cut -d, -f1` -b 524288 -c 12 -e 2 &> halftaxi.out &'
 
 halftaxi-log:
-	$(MAKE) ssh-agent CMD='tail halftaxi.out'
+	$(MAKE) ssh-agent CMD='tail -f halftaxi.out'
 
 fakeusers:
 	$(MAKE) ssh-agent CMD='source /etc/profile && exec nohup pdk fakeusers -b 100000 -n 4000000 --pilosa-hosts=$$(PILOSA_HOSTS) &> fakeusers.out &'
@@ -69,6 +69,10 @@ upload:
 	  -X PUT -H "Content-Type: application/octet-stream" \
 	  --data-binary @${LAST_RUN} \
 	  https://api.data.world/v0/uploads/jaffee/benchmarks/files/${LAST_RUN}
+	@echo ""
+	curl -H "Authorization: Bearer ${TOKEN}" \
+	  https://api.data.world/v0/datasets/jaffee/benchmarks/sync
+	@echo ""
 
 check-vars:
 	$(call check_defined, CLOUD, Cloud provider, e.g. AWS, OCI, or Azure)
@@ -87,8 +91,14 @@ halfurls:
 	$(MAKE) ssh-agent CMD='chmod +x ./halfurls.sh && ./halfurls.sh'
 
 bandwidth:
-	scp $(TAXI_MAKE_DIR)/bandwidth.sh $(USERNAME)@$(PILOSA_PUBLIC_IP):
+	scp $(TAXI_MAKE_DIR)/bandwidth.sh $(TAXI_MAKE_DIR)/bandwidth-list.txt $(USERNAME)@$(PILOSA_PUBLIC_IP):
 	$(MAKE) ssh CMD='chmod +x ./bandwidth.sh && exec nohup ./bandwidth.sh &> bandwidth.sh.out &'
+
+bw-results:
+	scp $(USERNAME)@$(PILOSA_PUBLIC_IP):allbw.out .
+	awk -F'!' '{print "\"$(CLOUD)\",\"$(SHAPE)\",$(COUNT),\"" $$1 "\"," $$2 ",,,,\"$(USERNAME)\""}' allbw.out > allbw.csv
+	mv $(LAST_RUN) $(LAST_RUN).orig
+	cat $(LAST_RUN).orig allbw.csv > $(LAST_RUN)
 
 bw-log:
 	$(MAKE) ssh CMD='tail -f bandwidth.sh.out'
