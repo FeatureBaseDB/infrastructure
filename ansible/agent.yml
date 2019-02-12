@@ -25,7 +25,7 @@
     - name: install software yum
       become: yes
       become_method: sudo
-      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon"
+      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or ansible_distribution == "CentOS"
       yum:
         name: "{{ packages }}"
         update_cache: yes
