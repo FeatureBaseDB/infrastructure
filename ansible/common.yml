@@ -1,0 +1,15 @@
+---
+- name: ensure python is working
+  hosts: all
+  strategy: free
+  gather_facts: no
+  tasks:
+    - name: try to install python
+      become: yes
+      become_method: sudo
+      raw: "apt -y install python"
+      ignore_errors: True
+    - name: symlink python
+      become: yes
+      become_method: sudo
+      raw: "[ -f /usr/bin/python ] || ln -s /usr/bin/python3 /usr/bin/python"

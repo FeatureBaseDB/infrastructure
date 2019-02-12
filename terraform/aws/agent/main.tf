@@ -5,10 +5,6 @@ resource "aws_instance" "agent" {
   ebs_optimized = true
   placement_group = "${var.placement_group_id}"
 
-  connection {
-    user = "ubuntu"
-  }
-
   key_name = "${aws_key_pair.auth.id}"
   vpc_security_group_ids = ["${var.security_group_id}"]
   subnet_id = "${var.subnet_id}"

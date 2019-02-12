@@ -32,14 +32,20 @@ Cost is for linux on-demand.
 8. =make provision=
 9. =make halfurls=
 10. =make halftaxi=
-10. Wait for taxi load to complete - use =make halftaxi-log= to check status.
-11. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
-12. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the
+11. Wait for taxi load to complete - use =make halftaxi-log= to check status.
+12. =export AGENT_IP=$(make output | jq .agent_public_ip.value)=
+13. Optional: Use =make provision-demo-taxi HOSTS=$AGENT_IP,= to provision the
     demo (nice for generating big queries). Note the comma after agent_ip
-13. =make bench= This will run the benchmarks and collect the results in this directory.
-14. Once you've done that with all configurations you care to benchmark, you can
-    run =make taxi-all-results= in the =examples= dir to collect all the results
-    into one CSV file.
+14. =make bench= This will run the benchmarks and collect the results in this directory.
+15. Your results are now in a file named like =rawresults-$(CLOUD)-$(SHAPE)-$(COUNT)-$(USERNAME)-$(shell date -u +%Y%M%dT%H%M).csv=
+16. =make bandwidth= will run memory bandwidth microbenchmarks. Use =make bw-log= to track progress.
+17. =make bw-results= fetches the bandwidth results and appends them to your other results.
+18. You can upload the results directly to a data.world project - you'll have to
+    edit the =upload= target in the taxi-include Makefile if you want to use a
+    data.world project other than the default:
+    - Download your API token from https://data.world/settings/advanced
+    - Place it in a file in this directory called =data.world-api-token=. 
+    - Run =make upload= from each particular configuration's directory.
 
 
 

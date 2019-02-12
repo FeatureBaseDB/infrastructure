@@ -1,7 +1,8 @@
 ---
+- name: common tasks
+  import_playbook: common.yml
 - name: basics
-  hosts: all
-  remote_user: "{{ username }}"
+  hosts: agent
   gather_facts: yes
   tasks:
     - name: install software apt
@@ -66,8 +67,7 @@
       vars:
         pilosa_hosts: "localhost:10101"
 - name: install terraform
-  hosts: all
-  remote_user: "{{ username }}"
+  hosts: agent
   gather_facts: no
   tasks:
     - name: install terraform binary

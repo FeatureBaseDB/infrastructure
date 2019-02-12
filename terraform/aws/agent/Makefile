@@ -1,3 +1,3 @@
-include ../../include/Makefile
+include ../../include/Makefile-agent
 
-PROVISION += provision-agent
+USERNAME=ec2-user

@@ -3,6 +3,8 @@ resource "google_compute_instance" "pilosa" {
   machine_type = "${var.machine_type}"
   zone         = "${var.zone}"
 
+  min_cpu_platform = "${var.min_cpu_platform}"
+
   boot_disk {
     initialize_params {
       image = "${var.image}"

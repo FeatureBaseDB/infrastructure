@@ -1,26 +1,11 @@
 ---
-- name: prereqs
-  hosts: all
-  strategy: free
-  remote_user: "{{ username }}"
-  gather_facts: no
-  tasks:
-    - name: try to install python
-      become: yes
-      become_method: sudo
-      raw: "apt -y install python"
-      ignore_errors: True
-
+- name: common tasks
+  import_playbook: common.yml
 - name: basics
-  hosts: all
+  hosts: pilosa
   strategy: free
-  remote_user: "{{ username }}"
   gather_facts: yes
   tasks:
-    - name: symlink python
-      become: yes
-      become_method: sudo
-      raw: "[ -f /usr/bin/python ] || ln -s /usr/bin/python3 /usr/bin/python"
     - name: find distro
       debug:
         var: ansible_distribution
@@ -82,9 +67,8 @@
         jump: ACCEPT
         action: insert
 - name: install go
-  hosts: all
+  hosts: pilosa
   strategy: free
-  remote_user: "{{ username }}"
   become: yes
   become_method: sudo
   gather_facts: no
@@ -97,9 +81,8 @@
       go_version_target: "go version go1.11 linux/amd64"
       set_go_path: true
 - name: install pilosa
-  hosts: all
+  hosts: pilosa
   strategy: free
-  remote_user: "{{ username }}"
   gather_facts: no
   tasks:
     - name: get private_ip
@@ -109,21 +92,25 @@
       set_fact:
         private_ip: "{{ private_ip.stdout }}"
     - name: get nvme devices
-      when: ansible_distribution != "OracleLinux" and cloud != "GCP"
+      when: ansible_distribution == "Ubuntu" and cloud != "GCP"
       become: yes
       become_method: sudo
       shell: blkid -o list | grep "not mounted" | awk '/nvme/ {print $1}' | xargs | sed 's/ /,/g'
       register: nvme_disks
     - name: get nvme devices
-      when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or cloud == "GCP"
+      when: ansible_distribution == "OracleLinux" or cloud == "GCP"
       shell: lsblk -r | awk '/nvme/ {print "/dev/"$1}' | xargs | sed 's/ /,/g'
+      register: nvme_disks
+    - name: get nvme devices
+      when: ansible_distribution == "Amazon"
+      shell: lsblk -O -r | awk '/Instance.*Storage/ {print "/dev/"$1}' | xargs | sed 's/ /,/'
       register: nvme_disks
     - name: print nvme stuff
       debug:
         var: nvme_disks
     - name: create volume group
       ignore_errors: True
-      when: nvme_disks.stdout|length > 4
+      when: nvme_disks.stdout is defined and nvme_disks.stdout|length > 4
       register: result
       become: yes
       become_method: sudo
@@ -131,7 +118,7 @@
         vg: pilosavg
         pvs: "{{ nvme_disks.stdout }}"
     - name: create lvm out of nvme devices
-      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      when: nvme_disks.stdout is defined and (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       lvol:
@@ -140,33 +127,33 @@
         size: +100%FREE
         pvs: "{{ nvme_disks.stdout }}"
     - name: create filesystem
-      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      when: nvme_disks.stdout is defined and (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       filesystem:
         dev: /dev/pilosavg/pilosalv
         fstype: xfs
     - name: mount filesystem
-      when: (nvme_disks.stdout|length > 4) and (result is not failed)
+      when: nvme_disks.stdout is defined and (nvme_disks.stdout|length > 4) and (result is not failed)
       become: yes
       become_method: sudo
       mount:
         fstype: xfs
-        path: "/home/{{ username }}/.pilosa"
+        path: "/home/{{ ansible_user }}/.pilosa"
         state: mounted
         src: /dev/pilosavg/pilosalv
     - name: chown data dir
       become: yes
       become_method: sudo
       file:
-        group: "{{ username }}"
-        owner: "{{ username }}"
-        path: "/home/{{ username }}/.pilosa"
+        group: "{{ ansible_user }}"
+        owner: "{{ ansible_user }}"
+        path: "/home/{{ ansible_user }}/.pilosa"
         recurse: yes
         state: directory
     - name: pull pilosa
       git:
-        dest: "/home/{{ username }}/go/src/github.com/pilosa/pilosa"
+        dest: "/home/{{ ansible_user }}/go/src/github.com/pilosa/pilosa"
         repo: "{{ pilosa_repo }}"
         version: "{{ pilosa_version }}"
       vars:
@@ -177,11 +164,11 @@
     - name: install pilosa build deps
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install-build-deps'
       args:
-        chdir: "/home/{{ username }}/go/src/github.com/pilosa/pilosa"
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/pilosa"
     - name: install pilosa
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
-        chdir: "/home/{{ username }}/go/src/github.com/pilosa/pilosa"
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/pilosa"
     - name: update pilosa systemd service
       become: yes
       become_method: sudo
@@ -230,16 +217,15 @@
         name: rsyslog
         state: restarted
 - name: microbenchmarks
-  hosts: all
+  hosts: pilosa
   strategy: free
-  remote_user: "{{ username }}"
   gather_facts: yes
   tasks:
     - name: get bandwidth (memory benchmarking tool)
       unarchive:
         src: https://zsmith.co/archives/bandwidth-1.5.1.tar.gz
         remote_src: yes
-        dest: "/home/{{ username }}/"
+        dest: "/home/{{ ansible_user }}/"
     - name: stropts hack for bandwidth (so it will compile)
       become: yes
       become_method: sudo
@@ -248,5 +234,5 @@
         state: touch
     - name: build bandwidth
       make:
-        chdir: "/home/{{ username }}/bandwidth-1.5.1"
+        chdir: "/home/{{ ansible_user }}/bandwidth-1.5.1"
         target: bandwidth64

@@ -12,9 +12,22 @@ PILOSA_PUBLIC_IPS=$(shell terraform output -json | jq -r ".pilosa_public_ips.val
 PILOSA_HOSTS=$(shell terraform output -json | jq -r 'reduce .pilosa_private_ips.value[] as $$item (""; . + $$item + ":10101,") | .[:-1]')
 PUBLIC_IP=$(PILOSA_PUBLIC_IP)
 HOSTS=$(PILOSA_PUBLIC_IPS),
-ANSIBLE_ARGS_FINAL=-i $(HOSTS) -e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)'  -e pilosa_hosts=$(PILOSA_HOSTS) -e username='$(USERNAME)' -e cloud='$(CLOUD)' $(ANSIBLE_ARGS)
+ANSIBLE_ARGS_FINAL=-e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)' -e pilosa_hosts=$(PILOSA_HOSTS) -e cloud='$(CLOUD)' $(ANSIBLE_ARGS)
+INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
 
 status: require-terraform
 	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
+
+nuke-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ~/.pilosa/*; sudo service pilosa start" ANSIBLE_TARGET=pilosa
+
+restart-pilosa:
+	$(MAKE) run CMD="sudo service pilosa restart" ANSIBLE_TARGET=pilosa
+
+start-pilosa:
+	$(MAKE) run CMD="sudo service pilosa start" ANSIBLE_TARGET=pilosa
+
+stop-pilosa:
+	$(MAKE) run CMD="sudo service pilosa stop" ANSIBLE_TARGET=pilosa
 
 PROVISION += provision-pilosa
