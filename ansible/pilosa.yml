@@ -21,6 +21,7 @@
           - make
           - git
           - htop
+          - iotop
           - jq
           - gcc
           - nasm
@@ -36,6 +37,7 @@
           - make
           - git
           - htop
+          - iotop
           - jq
           - gcc
           - nasm

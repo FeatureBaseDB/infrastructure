@@ -16,6 +16,7 @@
         packages:
           - make
           - git
+          - iotop
           - htop
           - jq
           - unzip
@@ -33,6 +34,7 @@
         packages:
           - make
           - git
+          - iotop
           - htop
           - jq
           - unzip

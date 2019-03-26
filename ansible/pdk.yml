@@ -35,8 +35,17 @@
     - name: pull tools
       git:
         dest: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
-        repo: http://github.com/pilosa/tools.git
+        repo: "{{ tools_repo }}"
+        version: "{{ tools_version }}"
+        force: true
+      vars:
+        tools_repo: https://github.com/pilosa/tools.git
+        tools_version: master
     - name: install tools
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
         chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
+    - name: install imagine
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; dep ensure -update; go install'
+      args:
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools/imagine"
