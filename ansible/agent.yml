@@ -81,3 +81,44 @@
         remote_src: True
 - name: install pdk
   import_playbook: pdk.yml
+- name: install jaeger tracing
+  hosts: agent
+  gather_facts: no
+  tasks:
+    - name: download tarball
+      become: yes
+      become_method: sudo
+      get_url:
+        url: "https://github.com/jaegertracing/jaeger/releases/download/v1.11.0/jaeger-1.11.0-linux-amd64.tar.gz"
+        dest: "/usr/local/src/jaeger-1.11.0-linux-amd64.tar.gz"
+    - name: Extract jaeger tarball
+      become: yes
+      become_method: sudo
+      unarchive:
+        src:  "/usr/local/src/jaeger-1.11.0-linux-amd64.tar.gz"
+        dest: "/usr/local/src/"
+        remote_src: yes
+    - name: Link executable
+      become: yes
+      become_method: sudo
+      file:
+        dest: "/usr/local/bin/jaeger-all-in-one"
+        src: "/usr/local/src/jaeger-1.11.0-linux-amd64/jaeger-all-in-one"
+        state: link
+    - name: update jaeger systemd service
+      become: yes
+      become_method: sudo
+      template:
+        src: "jaeger.service.j2"
+        dest: "/etc/systemd/system/jaeger.service"
+        mode: 0755
+      notify:
+        - restart jaeger
+  handlers:
+    - name: restart jaeger
+      become: yes
+      become_method: sudo
+      systemd:
+        name: jaeger
+        state: restarted
+        daemon_reload: yes
