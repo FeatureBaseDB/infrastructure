@@ -44,6 +44,7 @@ ssh: require-terraform require-jq
 	ssh -o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
 		-l $(USERNAME) \
+		$(SSH_ARGS) \
 		$(PUBLIC_IP) "$(CMD)"
 
 provision-%: require-jq require-terraform require-ansible inventory.json

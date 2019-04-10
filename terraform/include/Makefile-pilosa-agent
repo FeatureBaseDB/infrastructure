@@ -11,7 +11,7 @@ AGENT_PRIVATE_IP=$(shell terraform output -json | jq -r ".agent_private_ip.value
 AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
 
 ssh-agent:
-	$(MAKE) ssh -L 16686:localhost:16686 PUBLIC_IP=$(AGENT_PUBLIC_IP)
+	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP) SSH_ARGS="-L 16686:localhost:16686"
 
 run-agent:
 	$(MAKE) run ANSIBLE_TARGET=agent
