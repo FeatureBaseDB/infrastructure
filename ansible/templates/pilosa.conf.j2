@@ -7,6 +7,7 @@ max-map-count=900000
 
 coordinator = {{ 'true' if pilosa_hosts.startswith(private_ip) else 'false' }}
 replicas = 1
+long-query-time = "{{ pilosa_long_query_time }}"
 
 [gossip]
 
@@ -17,3 +18,4 @@ replicas = 1
 sampler-type = "{{ tracing_sampler_type }}"
 sampler-param = "{{ tracing_sampler_param  }}"
 agent-host-port = "{{ tracing_agent_host_port }}"
+

@@ -1,4 +1,4 @@
-ANSIBLE_ARGS_EXTRA+=-e tracing_agent_host_port=$(AGENT_PRIVATE_IP):16686
+ANSIBLE_ARGS_EXTRA+=-e tracing_agent_host_port=$(AGENT_PRIVATE_IP):6831
 
 include $(dir $(lastword $(MAKEFILE_LIST)))/Makefile-pilosa
 

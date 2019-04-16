@@ -195,6 +195,7 @@
           tracing_sampler_type: remote
           tracing_sampler_param: 0.001
           tracing_agent_host_port: ""
+          pilosa_long_query_time: "10s"
       notify:
         - restart pilosa
     - name: max map count
