@@ -25,6 +25,7 @@
           - jq
           - gcc
           - nasm
+          - dstat
     - name: install software yum
       when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or ansible_distribution == "CentOS"
       become: yes
@@ -42,6 +43,7 @@
           - gcc
           - nasm
           - lvm*
+          - dstat
     - name: open firewall port 10101
       become: yes
       become_method: sudo
