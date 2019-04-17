@@ -28,8 +28,8 @@ RESULT_FILE=rawresults-$(CLOUD)-$(SHAPE)-$(COUNT)-$(USERNAME)-$(shell date +%Y%m
 bench:
 	scp $(TAXI_MAKE_DIR)/benchmark.sh $(USERNAME)@$(AGENT_PUBLIC_IP):
 	$(MAKE) ssh-agent CMD='chmod +x ./benchmark.sh && ./benchmark.sh > /dev/null && ./benchmark.sh > benchrun.jsons'
-	$(MAKE) ssh CMD='source /etc/profile && mkdir -p /home/$(USERNAME)/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && go test -bench=. -run=NoneZ -timeout=45m -temp-dir=/home/$(USERNAME)/.pilosa/.bench' | tee ./gobenchpilosa.out
-	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=45m' |  tee ./gobenchroaring.out
+	$(MAKE) ssh CMD='source /etc/profile && mkdir -p /home/$(USERNAME)/.pilosa/.bench && cd go/src/github.com/pilosa/pilosa && GO111MODULE=on go test -bench=. -run=NoneZ -timeout=245m -temp-dir=/home/$(USERNAME)/.pilosa/.bench' | tee ./gobenchpilosa.out
+	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/roaring && go test -bench=. -run=NoneZ  -timeout=245m' |  tee ./gobenchroaring.out
 	$(MAKE) ssh CMD='source /etc/profile && cd go/src/github.com/pilosa/pilosa/inmem && go test -bench=. -run=NoneZ -timeout=45m' |  tee ./gobenchinmem.out
 	scp $(USERNAME)@$(AGENT_PUBLIC_IP):benchrun.jsons .
 	$(MAKE) parse-go-bench

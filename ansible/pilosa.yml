@@ -21,9 +21,11 @@
           - make
           - git
           - htop
+          - iotop
           - jq
           - gcc
           - nasm
+          - dstat
     - name: install software yum
       when: ansible_distribution == "OracleLinux" or ansible_distribution == "Amazon" or ansible_distribution == "CentOS"
       become: yes
@@ -36,10 +38,12 @@
           - make
           - git
           - htop
+          - iotop
           - jq
           - gcc
           - nasm
           - lvm*
+          - dstat
     - name: open firewall port 10101
       become: yes
       become_method: sudo
@@ -77,9 +81,9 @@
   - include_role:
       name: ansible-go
     vars:
-      go_tarball: "go1.11.linux-amd64.tar.gz"
-      go_tarball_checksum: "sha256:b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499"
-      go_version_target: "go version go1.11 linux/amd64"
+      go_tarball: "go1.12.1.linux-amd64.tar.gz"
+      go_tarball_checksum: "sha256:2a3fdabf665496a0db5f41ec6af7a9b15a49fbe71a85a50ca38b1f13a103aeec"
+      go_version_target: "go version go1.12.1 linux/amd64"
       set_go_path: true
 - name: install pilosa
   hosts: pilosa
@@ -190,8 +194,22 @@
         mode: 0755
       vars:
           gossip_seeds:
+          tracing_sampler_type: remote
+          tracing_sampler_param: 0.001
+          tracing_agent_host_port: ""
+          pilosa_long_query_time: "10s"
       notify:
         - restart pilosa
+    - name: max map count
+      become: yes
+      become_method: sudo
+      template:
+        src: "98-maxmap.conf.j2"
+        dest: "/etc/sysctl.d/98-maxmap.conf"
+    - name: reread sysctl
+      become: yes
+      become_method: sudo
+      shell: "sysctl --system"
     - name: update logging config
       become: yes
       become_method: sudo

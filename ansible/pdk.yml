@@ -8,9 +8,9 @@
   - include_role:
       name: ansible-go
     vars:
-      go_tarball: "go1.11.linux-amd64.tar.gz"
-      go_tarball_checksum: "sha256:b3fcf280ff86558e0559e185b601c9eade0fd24c900b4c63cd14d1d38613e499"
-      go_version_target: "go version go1.11 linux/amd64"
+      go_tarball: "go1.12.1.linux-amd64.tar.gz"
+      go_tarball_checksum: "sha256:2a3fdabf665496a0db5f41ec6af7a9b15a49fbe71a85a50ca38b1f13a103aeec"
+      go_version_target: "go version go1.12.1 linux/amd64"
       set_go_path: true
 - name: install pdk
   hosts: agent
@@ -35,8 +35,19 @@
     - name: pull tools
       git:
         dest: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
-        repo: http://github.com/pilosa/tools.git
+        repo: "{{ tools_repo }}"
+        version: "{{ tools_version }}"
+        force: true
+      vars:
+        tools_repo: https://github.com/pilosa/tools.git
+        tools_version: master
     - name: install tools
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
         chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
+    - name: install imagine
+      # TODO remove ignore_errors once imagine is merged
+      ignore_errors: True
+      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; dep ensure -update; go install'
+      args:
+        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools/imagine"

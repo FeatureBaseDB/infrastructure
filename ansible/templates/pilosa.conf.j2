@@ -1,9 +1,21 @@
 bind = "{{ private_ip }}:10101"
 
+max-file-count=900000
+max-map-count=900000
+
 [cluster]
 
-  coordinator = {{ 'true' if pilosa_hosts.startswith(private_ip) else 'false' }}
+coordinator = {{ 'true' if pilosa_hosts.startswith(private_ip) else 'false' }}
+replicas = 1
+long-query-time = "{{ pilosa_long_query_time }}"
 
 [gossip]
 
   seeds = {{ gossip_seeds }}
+
+[tracing]
+
+sampler-type = "{{ tracing_sampler_type }}"
+sampler-param = "{{ tracing_sampler_param  }}"
+agent-host-port = "{{ tracing_agent_host_port }}"
+

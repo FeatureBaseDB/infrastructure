@@ -9,7 +9,6 @@ TF_WORKSPACE=$(shell terraform workspace show)
 
 export ANSIBLE_HOST_KEY_CHECKING=false
 USERNAME=ubuntu
-ANSIBLE_ARGS=
 ANSIBLE_DIR=../../../ansible
 ANSIBLE_TARGET=all
 INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
@@ -45,6 +44,7 @@ ssh: require-terraform require-jq
 	ssh -o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
 		-l $(USERNAME) \
+		$(SSH_ARGS) \
 		$(PUBLIC_IP) "$(CMD)"
 
 provision-%: require-jq require-terraform require-ansible inventory.json
