@@ -41,13 +41,7 @@
       vars:
         tools_repo: https://github.com/pilosa/tools.git
         tools_version: master
-    - name: install tools
+    - name: install pi and imagine
       command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; make install'
       args:
         chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools"
-    - name: install imagine
-      # TODO remove ignore_errors once imagine is merged
-      ignore_errors: True
-      command: bash -c 'source /etc/profile.d/go-bin.sh; source /etc/profile.d/go-path.sh; dep ensure -update; go install'
-      args:
-        chdir: "/home/{{ ansible_user }}/go/src/github.com/pilosa/tools/imagine"
