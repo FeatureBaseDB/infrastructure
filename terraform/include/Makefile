@@ -18,42 +18,46 @@ HOSTS=$(PUBLIC_IP),
 
 PROVISION=
 
+help:           ## Show this help.
+	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed 's/:.*##/: ##/' | awk -F"##" '{printf "%-24s%s\n", $$1, $$2}'
+
+
 # Halt the process if the command is not present (currently all checked commands have valid "--version" subcommands)
 require-%:
 	@command -v $* &>/dev/null
 
-init: require-terraform
+init: require-terraform  ## Initialize terraform in this directory.
 	terraform init
 
-plan: require-terraform
+plan: require-terraform  ## Show the Terraform plan.
 	terraform plan $(TF_ARGS_FINAL)
 
-apply: require-terraform
+apply: require-terraform  ## Create infrastructure using Terraform.
 	terraform apply $(TF_ARGS_FINAL)
 
 plan-destroy: require-terraform
 	terraform plan -destroy $(TF_ARGS_FINAL)
 
-destroy: require-terraform
+destroy: require-terraform  ## Destroy all infrastructure.
 	terraform destroy $(TF_ARGS_FINAL)
 
-output: require-terraform
+output: require-terraform  ## Runs "terraform output" to see the state of infrastructure. (IP addresses, etc.)
 	@terraform output -state=$(TF_STATE) -json
 
-ssh: require-terraform require-jq
+ssh: require-terraform require-jq  ## ssh to Pilosa host. Use N=<int> to specify a particular host.
 	ssh -o UserKnownHostsFile=/dev/null \
 		-o StrictHostKeyChecking=no \
 		-l $(USERNAME) \
 		$(SSH_ARGS) \
 		$(PUBLIC_IP) "$(CMD)"
 
-provision-%: require-jq require-terraform require-ansible inventory.json
+provision-%: require-jq require-terraform require-ansible inventory.json  ## Provision a particular Ansible module. e.g. "make provision-agent" would run agent.yml
 	ansible-playbook -i inventory.json $(ANSIBLE_ARGS_FINAL) $(ANSIBLE_ARGS_EXTRA) $(ANSIBLE_DIR)/$*.yml
 
 inventory.json: require-terraform require-jq
 	$(MAKE) output | jq '$(INVENTORY_GENERATOR_JQ)' > $@
 
-provision:
+provision:  ## Use Ansible to install software and configuration.
 	$(MAKE) ansible-roles $(PROVISION)
 
 ANSIBLE_TARGET=all
@@ -65,8 +69,8 @@ ansible: require-ansible inventory.json
 ansible-roles:
 	ansible-galaxy install -r ../../../ansible/requirements.yaml
 
-run:
+run:  ## Run command specified as CMD=blah using Ansible on remote hosts.
 	$(MAKE) ansible ANSIBLE_MODULE=shell ANSIBLE_ARGS_EXTRA='-a "$(CMD)"'
 
-ping:
+ping:  ## Run Ansible ping.
 	$(MAKE) ansible ANSIBLE_MODULE=ping

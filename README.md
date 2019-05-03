@@ -22,7 +22,7 @@ The main things provided in this repository are:
 You can use these tools together, or separately, and there are some
 examples of using them together along with some Makefiles to smooth
 out the whole process under `terraform/examples`. Check out the
-[readme](terraform/examples/README.org) there for more info.
+[readme](terraform/examples/README.md) there for more info.
 
 getting started
 ---------------

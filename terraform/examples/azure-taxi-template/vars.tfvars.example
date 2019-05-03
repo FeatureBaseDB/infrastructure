@@ -1,0 +1,8 @@
+pilosa_cluster_size=3
+pilosa_vm_size="Standard_F32s_v2"
+agent_vm_size="Standard_F64s_v2"
+subscription_id="9fdb0f64-c25c-49c0-a4b7-dc6e204540f3"
+tenant_id="4a137d66-d161-4ae4-b1e6-07e9920874b8"
+
+resource_group_name="cody-default-rg"
+subnet_id="/subscriptions/9fdb0f64-c25c-49c0-a4b7-dc6e204540f3/resourceGroups/cody-default-rg/providers/Microsoft.Network/virtualNetworks/cody-default-network/subnets/cody-default-subnet"

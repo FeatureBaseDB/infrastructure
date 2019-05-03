@@ -23,6 +23,7 @@ Deploy a Pilosa Cluster and an "agent" node from which to run ingest,benchmarks,
 10. `make provision` This runs ansible and installs stuff on all your hosts.
 
 Now you can do things! The most important commands are:
+- `make help` See a list of commands with help strings.
 - `make output` See the internal and external IP addresses of the infrastructure you provisioned.
 - `make ssh-agent` SSH to the agent node with some helpful port forwards.
 - `make ssh` SSH to the first Pilosa node.
@@ -39,6 +40,8 @@ Now you can do things! The most important commands are:
   ANSIBLE_ARGS="-e pilosa_repo=https://github.com/jaffee/pilosa -e
   pilosa_version=cool-branch"`. Look at the `vars:` sections of the
   various `ansible/*.yml` files to see what variables are exposed.
+- `make destroy` Remove all infrastructure.
+- `make nuke-pilosa` Remove all Pilosa data and restart.
 
 Try running `make ssh-agent`, and generating some data into Pilosa with the `imagine` tool. Then see if you can view the tracing UI by navigating to http://localhost:16686/ (you may need to pass some ANSIBLE_ARGS when provisioning Pilosa like `tracing_sample_type=const` and `tracing_sampler_param=1`).
 
