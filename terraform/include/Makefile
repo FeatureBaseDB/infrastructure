@@ -3,8 +3,9 @@
 PUBLIC_IP=$(shell terraform output -state=$(TF_STATE) -json | jq -r ".public_ip.value")
 
 export TF_VAR_prefix_name=$(PREFIX_NAME)
+TF_VARS=vars.tfvars
 TF_ARGS=
-TF_ARGS_FINAL=-var-file=vars.tfvars $(TF_ARGS)
+TF_ARGS_FINAL=-var-file=$(TF_VARS) $(TF_ARGS)
 TF_WORKSPACE=$(shell terraform workspace show)
 
 export ANSIBLE_HOST_KEY_CHECKING=false
@@ -12,6 +13,7 @@ USERNAME=ubuntu
 ANSIBLE_DIR=../../../ansible
 ANSIBLE_TARGET=all
 INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
+HOSTS_LINE_JQ=.pilosa_public_ips.value + [.agent_public_ip.value] | reduce .[] as $$ip (""; . + " " + $$ip)
 
 PREFIX_NAME=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
@@ -24,7 +26,7 @@ help:           ## Show this help.
 
 # Halt the process if the command is not present (currently all checked commands have valid "--version" subcommands)
 require-%:
-	@command -v $* &>/dev/null
+	@command -v $* >/dev/null 2>&1
 
 init: require-terraform  ## Initialize terraform in this directory.
 	@terraform init
@@ -54,11 +56,20 @@ ssh: require-terraform require-jq  ## ssh to Pilosa host. Use N=<int> to specify
 provision-%: require-jq require-terraform require-ansible inventory.json  ## Provision a particular Ansible module. e.g. "make provision-agent" would run agent.yml
 	@ansible-playbook -i inventory.json $(ANSIBLE_ARGS_FINAL) $(ANSIBLE_ARGS_EXTRA) $(ANSIBLE_DIR)/$*.yml
 
+ssh-config: require-terraform require-jq
+	@echo ""
+	@echo "Host	`$(MAKE) -s output | jq -r '$(HOSTS_LINE_JQ)'`"
+	@echo "	Port 22"
+	@echo "	IdentityFile $$(sed -ne '/ssh_public_key/ { s/.*="//; s/.pub"$$//; p; }' $(TF_VARS))"
+
+update-ssh-config:
+	@$(MAKE) -s ssh-config >> ~/.ssh/config
+
 inventory.json: require-terraform require-jq
 	@$(MAKE) -s output | jq '$(INVENTORY_GENERATOR_JQ)' > $@ || (echo >&2 "failing terraform output:"; $(MAKE) -s output)
 
 provision:  ## Use Ansible to install software and configuration.
-	@$(MAKE) ansible-roles $(PROVISION)
+	@$(MAKE) -s ansible-roles $(PROVISION)
 
 ANSIBLE_TARGET=all
 ANSIBLE_MODULE=ping
