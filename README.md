@@ -1,6 +1,29 @@
 Pilosa Tools for Infrastructure and Operations
 ==============================================
 
+Hello!
+
+You probably are here because you want a quick and easy way to deploy
+Pilosa and associated utilities on your cloud provider of
+choice. You're in the right place. Check out the "getting started"
+section just below to see supported cloud providers, and some basic
+info on what you'll need to do to use the tools in this repository
+with that provider.
+
+The main things provided in this repository are:
+
+1. `terraform` for deploying infrastructure on various cloud
+   providers. This includes getting servers/vms, setting up
+   networking, firewalls, ssh access, etc.
+
+2. `ansible` configs for installing Pilosa and related utilities once
+   you have a set of servers with SSH access.
+
+You can use these tools together, or separately, and there are some
+examples of using them together along with some Makefiles to smooth
+out the whole process under `terraform/examples`. Check out the
+[readme](terraform/examples/README.md) there for more info.
+
 getting started
 ---------------
 

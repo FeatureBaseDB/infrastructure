@@ -15,19 +15,19 @@ HOSTS=$(PILOSA_PUBLIC_IPS),
 ANSIBLE_ARGS_FINAL=-e version=$(PILOSA_VERSION) -e gossip_seeds='$(PILOSA_GOSSIP_SEEDS)' -e pilosa_hosts=$(PILOSA_HOSTS) -e cloud='$(CLOUD)' $(ANSIBLE_ARGS)
 INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
 
-status: require-terraform
-	$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status"
+status: require-terraform  ## Get Pilosa's status.
+	@$(MAKE) ssh CMD="curl -s $(PILOSA_PRIVATE_IP):10101/status | jq ."
 
-nuke-pilosa:
-	$(MAKE) run CMD="sudo service pilosa stop; rm -rf ~/.pilosa/*; sudo service pilosa start" ANSIBLE_TARGET=pilosa
+nuke-pilosa:  ## Stop Pilosa. Remove all data. Start Pilosa.
+	@$(MAKE) run CMD="sudo service pilosa stop; rm -rf ~/.pilosa/*; sudo service pilosa start" ANSIBLE_TARGET=pilosa
 
-restart-pilosa:
-	$(MAKE) run CMD="sudo service pilosa restart" ANSIBLE_TARGET=pilosa
+restart-pilosa: ## Restart Pilosa.
+	@$(MAKE) run CMD="sudo service pilosa restart" ANSIBLE_TARGET=pilosa
 
-start-pilosa:
-	$(MAKE) run CMD="sudo service pilosa start" ANSIBLE_TARGET=pilosa
+start-pilosa: ## Start Pilosa.
+	@$(MAKE) run CMD="sudo service pilosa start" ANSIBLE_TARGET=pilosa
 
-stop-pilosa:
-	$(MAKE) run CMD="sudo service pilosa stop" ANSIBLE_TARGET=pilosa
+stop-pilosa: ## Stop Pilosa.
+	@$(MAKE) run CMD="sudo service pilosa stop" ANSIBLE_TARGET=pilosa
 
 PROVISION += provision-pilosa

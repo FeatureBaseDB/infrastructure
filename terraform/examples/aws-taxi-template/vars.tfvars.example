@@ -1,0 +1,9 @@
+pilosa_cluster_size=3
+pilosa_instance_type="r4.2xlarge"
+agent_instance_type="r4.2xlarge"
+
+ssh_public_key="~/.ssh/id_rsa.pub"
+
+security_group_id="sg-08d01f1c8e2a9f4f1"
+subnet_id="subnet-04f2beb6946e1f62e"
+placement_group_id="cody-default-pg"
