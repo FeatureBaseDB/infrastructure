@@ -55,7 +55,7 @@ provision-%: require-jq require-terraform require-ansible inventory.json  ## Pro
 	@ansible-playbook -i inventory.json $(ANSIBLE_ARGS_FINAL) $(ANSIBLE_ARGS_EXTRA) $(ANSIBLE_DIR)/$*.yml
 
 inventory.json: require-terraform require-jq
-	@$(MAKE) output | jq '$(INVENTORY_GENERATOR_JQ)' > $@
+	@$(MAKE) -s output | jq '$(INVENTORY_GENERATOR_JQ)' > $@ || (echo >&2 "failing terraform output:"; $(MAKE) -s output)
 
 provision:  ## Use Ansible to install software and configuration.
 	@$(MAKE) ansible-roles $(PROVISION)
