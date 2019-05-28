@@ -2,7 +2,7 @@ resource "azurerm_public_ip" "pilosa" {
   name                         = "${var.prefix_name}-pilosa-ip${count.index}"
   location                     = "${var.resource_group_location}"
   resource_group_name          = "${var.resource_group_name}"
-  public_ip_address_allocation = "Dynamic"
+  allocation_method            = "Dynamic"
   idle_timeout_in_minutes      = 30
   count = "${var.pilosa_cluster_size}"
 }
@@ -70,7 +70,7 @@ resource "azurerm_virtual_machine" "pilosa" {
     }
   }
 
-  tags {
+  tags = {
     index = "${count.index}"
   }
 }
