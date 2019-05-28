@@ -70,7 +70,7 @@ resource "azurerm_virtual_machine" "pilosa" {
     }
   }
 
-  tags {
+  tags = {
     index = "${count.index}"
   }
 }
