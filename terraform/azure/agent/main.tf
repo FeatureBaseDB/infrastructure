@@ -1,8 +1,15 @@
+terraform {
+  required_version = ">= 0.12.0"
+  required_providers {
+    azurerm = ">= 1.29"
+  }
+}
+
 resource "azurerm_public_ip" "agent" {
   name                         = "${var.prefix_name}-agent-ip"
   location                     = "${var.resource_group_location}"
   resource_group_name          = "${var.resource_group_name}"
-  public_ip_address_allocation = "Dynamic"
+  allocation_method            = "Dynamic"
   idle_timeout_in_minutes      = 30
 }
 
