@@ -10,8 +10,8 @@ AGENT_PRIVATE_IP=$(shell terraform output -json | jq -r ".agent_private_ip.value
 
 AGENT_PUBLIC_IP=$(shell terraform output -json | jq -r ".agent_public_ip.value")
 
-ssh-agent: ## SSH to the agent node - port forwards 16686 for Jaeger UI.
-	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP) SSH_ARGS="-L 16686:localhost:16686"
+ssh-agent: ## SSH to the agent node - port forwards 16686 for Jaeger UI and 9090 for Prometheus
+	$(MAKE) ssh PUBLIC_IP=$(AGENT_PUBLIC_IP) SSH_ARGS="-L 16686:localhost:16686 -L 9090:localhost:9090"
 
 run-agent: Run command specified by "CMD=something" on the agent node.
 	$(MAKE) run ANSIBLE_TARGET=agent
