@@ -122,3 +122,15 @@
         name: jaeger
         state: restarted
         daemon_reload: yes
+- name: install prometheus
+  hosts: agent
+  strategy: free
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  roles:
+  - cloudalchemy.prometheus
+  vars:
+    prometheus_targets:
+      node:
+      - targets: "{{ pilosa_hosts.split(',') }}"

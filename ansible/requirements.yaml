@@ -1,2 +1,3 @@
 - src: git+https://github.com/mrlesmithjr/ansible-mdadm.git
 - src: yogo1212.ansible_go
+- src: cloudalchemy.prometheus
