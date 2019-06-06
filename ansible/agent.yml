@@ -134,3 +134,15 @@
     prometheus_targets:
       node:
       - targets: "{{ pilosa_hosts.split(',') }}"
+- name: install grafana
+  hosts: agent
+  strategy: free
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  roles:
+    - cloudalchemy.grafana
+  vars:
+    grafana_security:
+      admin_user: admin
+      admin_password: pilosa
