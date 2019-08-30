@@ -7,5 +7,5 @@ output "security_group_id" {
 }
 
 output "subnet_ids" {
-  value = ["${azurerm_subnet.subnets.*.id}"]
+  value = "${azurerm_subnet.subnets.*.id}"
 }

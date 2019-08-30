@@ -27,7 +27,7 @@ resource "oci_core_instance" "PilosaInstance" {
     boot_volume_size_in_gbs = "140"
   }
 
-  metadata {
+  metadata = {
     ssh_authorized_keys = "${file("${var.ssh_public_key}")}"
     instance_index = "${count.index}"
   }

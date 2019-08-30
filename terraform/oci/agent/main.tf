@@ -16,9 +16,8 @@ resource "oci_core_instance" "AgentInstance" {
     source_id   = "${var.instance_image_ocid[var.region]}"
   }
 
-  metadata {
+  metadata = {
     ssh_authorized_keys = "${file("${var.ssh_public_key}")}"
-    instance_index = "${count.index}"
   }
 
   timeouts {

@@ -15,7 +15,7 @@ resource "aws_instance" "agent" {
     iops = 10000
   }
 
-  tags {
+  tags = {
     Name = "${var.prefix_name}-agent"
   }
 }
