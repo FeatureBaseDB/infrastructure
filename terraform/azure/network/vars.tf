@@ -21,3 +21,7 @@ variable "prefix_name" {
 variable "resource_group_location" {
   default = "South Central US"
 }
+
+variable "subnet_count" {
+    default = 10
+}
