@@ -19,7 +19,7 @@ resource "aws_instance" "pilosa" {
     iops = 10000
   }
 
-  tags {
+  tags = {
     Name = "${var.prefix_name}-pilosa${count.index}"
   }
 

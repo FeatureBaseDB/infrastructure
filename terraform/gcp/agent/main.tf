@@ -23,7 +23,7 @@ resource "google_compute_instance" "agent" {
     }
   }
 
-  metadata {
+  metadata = {
     sshKeys = "ubuntu:${file("${pathexpand("${var.ssh_public_key}")}")}"
   }
 }

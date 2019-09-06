@@ -23,7 +23,7 @@ resource "google_compute_instance" "pilosa" {
     }
   }
 
-  metadata {
+  metadata = {
     sshKeys = "ubuntu:${file("${pathexpand("${var.ssh_public_key}")}")}"
   }
 

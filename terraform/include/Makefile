@@ -15,6 +15,9 @@ ANSIBLE_TARGET=all
 INVENTORY_GENERATOR_JQ={pilosa:{hosts:(.pilosa_public_ips.value | to_entries | map({("pilosa" + (.key|tostring)): {ansible_host: .value, ansible_user: "$(USERNAME)"}}) | add)}}
 HOSTS_LINE_JQ=.pilosa_public_ips.value + [.agent_public_ip.value] | reduce .[] as $$ip (""; . + " " + $$ip)
 
+# See https://github.com/ansible/ansible/issues/32499
+export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
+
 PREFIX_NAME=$(USER)-$(TF_WORKSPACE)
 HOSTS=$(PUBLIC_IP),
 

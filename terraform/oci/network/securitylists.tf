@@ -20,8 +20,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     tcp_options {
-      "min" = 10101
-      "max" = 10101
+      min = 10101
+      max = 10101
     }
   }
 
@@ -31,8 +31,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     tcp_options {
-      "min" = 14000
-      "max" = 14000
+      min = 14000
+      max = 14000
     }
   }
 
@@ -42,8 +42,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     udp_options {
-      "min" = 14000
-      "max" = 14000
+      min = 14000
+      max = 14000
     }
   }
 
@@ -53,8 +53,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     tcp_options {
-      "min" = 22
-      "max" = 22
+      min = 22
+      max = 22
     }
   }
 
@@ -64,8 +64,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     tcp_options {
-      "min" = 8000
-      "max" = 8000
+      min = 8000
+      max = 8000
     }
   }
 
@@ -75,8 +75,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = true
 
     icmp_options {
-      "type" = 3
-      "code" = 4
+      type = 3
+      code = 4
     }
   }
 
@@ -86,8 +86,8 @@ resource "oci_core_security_list" "PilosaSecurityList" {
     stateless = false
 
     tcp_options {
-      "min" = 8000
-      "max" = 8000
+      min = 8000
+      max = 8000
     }
   }
 }

@@ -16,12 +16,12 @@ resource "azurerm_subnet" "subnets" {
   virtual_network_name = "${azurerm_virtual_network.vnet.name}"
   address_prefix       = "10.0.${count.index + 100}.0/24"
 
-  count = 10
+  count = "${var.subnet_count}"
 }
 
 resource "azurerm_subnet_network_security_group_association" "security_group_association" {
   subnet_id                 = "${azurerm_subnet.subnets.*.id[count.index]}"
   network_security_group_id = "${azurerm_network_security_group.security_group.id}"
 
-  count = 10
+  count = "${var.subnet_count}"
 }
