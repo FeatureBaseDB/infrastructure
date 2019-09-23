@@ -1,9 +1,9 @@
 # Quick Start
-Deploy a Pilosa Cluster and an "agent" node from which to run ingest,benchmarks,UI servers, etc. The agent will include the [[github.com/pilosa/pdk][PDK]], [[github.com/pilosa/tools][tools]], [[https://www.jaegertracing.io][Jaeger]], and more.
+Deploy a Pilosa Cluster and an "agent" node from which to run ingest,benchmarks,UI servers, etc. The agent will include the [PDK](github.com/pilosa/pdk), [tools](github.com/pilosa/tools), [Jaeger](https://www.jaegertracing.io), and more.
 
 1. Clone github.com/pilosa/infrastructure and change into it.
 2. `cd terraform/examples`
-3. Choose a cloud provider and follow the instructions in the [[../../README.md][top level README]] to get credentials set up.
+3. Choose a cloud provider and follow the instructions in the [top level README](../../README.md) to get credentials set up.
 4. Copy a <cloud>-taxi-template directory to a descriptively named
    directory. e.g. `cp -r oci-taxi-template
    oci-taxi-DenseIO2.16-3node` Don't worry about the "taxi"
