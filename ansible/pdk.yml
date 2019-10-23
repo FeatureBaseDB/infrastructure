@@ -1,17 +1,6 @@
 ---
-- name: install go
-  hosts: all
-  become: yes
-  become_method: sudo
-  gather_facts: no
-  tasks:
-  - include_role:
-      name: yogo1212.ansible_go
-    vars:
-      go_version: "1.12.5"
-      go_tarball_checksum: "sha256:aea86e3c73495f205929cfebba0d63f1382c8ac59be081b6351681415f4063cf."
-      go_version_target: "go version go1.12.5 linux/amd64"
-      set_go_path: true
+- name: common tasks
+  import_playbook: common.yml
 - name: install pdk
   hosts: agent
   gather_facts: no
