@@ -13,3 +13,16 @@
       become: yes
       become_method: sudo
       raw: "[ -f /usr/bin/python ] || ln -s /usr/bin/python3 /usr/bin/python"
+- name: install go
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: no
+  tasks:
+  - include_role:
+      name: yogo1212.ansible_go
+    vars:
+      go_version: "1.13.3"
+      go_tarball_checksum: "sha256:0804bf02020dceaa8a7d7275ee79f7a142f1996bfd0c39216ccb405f93f994c0."
+      go_version_target: "go version go1.13.3 linux/amd64"
+      set_go_path: true
