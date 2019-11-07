@@ -31,3 +31,6 @@ variable "min_cpu_platform" {
   default = ""
 }
 
+variable "agent_disk_size_gb" {
+  default = 200
+}

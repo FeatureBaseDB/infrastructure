@@ -8,6 +8,7 @@ resource "google_compute_instance" "pilosa" {
   boot_disk {
     initialize_params {
       image = "${var.image}"
+      size = "${var.pilosa_disk_size_gb}"
     }
   }
 

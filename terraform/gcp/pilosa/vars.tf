@@ -33,3 +33,8 @@ variable "pilosa_cluster_size" {
 variable "min_cpu_platform" {
   default = ""
 }
+
+variable "pilosa_disk_size_gb" {
+  default = 200
+}
+
